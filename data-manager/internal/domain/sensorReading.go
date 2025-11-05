@@ -1,7 +1,7 @@
 package domain
 
 type SensorReading struct {
-	Id                  string `gorm:"primaryKey"`
+	ID                  string
 	UsedKW              float64
 	GeneratedKW         float64
 	Time                int64
