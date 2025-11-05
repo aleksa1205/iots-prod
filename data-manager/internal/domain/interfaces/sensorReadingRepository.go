@@ -1,8 +1,11 @@
 package domain
 
-import "data-manager/internal/domain"
+import (
+	"context"
+	"data-manager/internal/domain"
+)
 
 type SensorReadingRepository interface {
-	GetAll() ([]domain.SensorReading, error)
-	GetByID(id string) (domain.SensorReading, error)
+	GetAll(ctx context.Context) ([]domain.SensorReading, error)
+	GetByID(ctx context.Context, id string) (domain.SensorReading, error)
 }
