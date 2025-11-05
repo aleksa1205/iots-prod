@@ -9,16 +9,3 @@ type SensorReadingRequest struct {
 	Pressure            float32
 	ApparentTemperature float32
 }
-
-//func (dto SensorReadingRequest) ToDomain() domain.SensorReading {
-//	return domain.SensorReading{
-//		ID:                  uuid.New().String(),
-//		UsedKW:              dto.UsedKW,
-//		GeneratedKW:         dto.GeneratedKW,
-//		Time:                dto.Time,
-//		Temperature:         dto.Temperature,
-//		Humidity:            dto.Humidity,
-//		Pressure:            dto.Pressure,
-//		ApparentTemperature: dto.ApparentTemperature,
-//	}
-//}
