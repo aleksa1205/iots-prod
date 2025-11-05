@@ -1,7 +1,6 @@
-package application
+package dtos
 
-type SensorReadingResponse struct {
-	ID                  string
+type SensorReadingRequest struct {
 	UsedKW              float64
 	GeneratedKW         float64
 	Time                int64

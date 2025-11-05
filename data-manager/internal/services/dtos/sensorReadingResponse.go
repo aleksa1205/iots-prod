@@ -1,6 +1,6 @@
-package domain
+package dtos
 
-type SensorReading struct {
+type SensorReadingResponse struct {
 	ID                  string
 	UsedKW              float64
 	GeneratedKW         float64

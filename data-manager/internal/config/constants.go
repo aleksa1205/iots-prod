@@ -1,4 +1,4 @@
-package application
+package config
 
 type EnvironmentVariableKeys struct {
 	Env                      string

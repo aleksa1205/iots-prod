@@ -1,7 +1,7 @@
-package infrastructure
+package repositories
 
 import (
-	"data-manager/internal/domain"
+	"data-manager/internal/entities"
 	"database/sql"
 	"fmt"
 
@@ -25,7 +25,7 @@ func ConnectToDatabase(connectionString string) (*sql.DB, error) {
 		return nil, fmt.Errorf("CoonectToDatabase: Failed to ping database: %w", err)
 	}
 
-	err = db.AutoMigrate(&domain.SensorReading{})
+	err = db.AutoMigrate(&entities.SensorReading{})
 	if err != nil {
 		return nil, fmt.Errorf("CoonectToDatabase: Failed to auto-migrate database: %w", err)
 	}

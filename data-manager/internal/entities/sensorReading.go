@@ -1,6 +1,7 @@
-package application
+package entities
 
-type SensorReadingRequest struct {
+type SensorReading struct {
+	ID                  string
 	UsedKW              float64
 	GeneratedKW         float64
 	Time                int64

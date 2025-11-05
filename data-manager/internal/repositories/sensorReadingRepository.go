@@ -1,8 +1,8 @@
-package infrastructure
+package repositories
 
 import (
 	"context"
-	"data-manager/internal/domain"
+	"data-manager/internal/entities"
 
 	"gorm.io/gorm"
 )
@@ -15,15 +15,15 @@ func NewSensorReadingRepository(db *gorm.DB) *SensorReadingRepository {
 	return &SensorReadingRepository{db: db}
 }
 
-func (repository *SensorReadingRepository) GetAll(ctx context.Context) ([]domain.SensorReading, error) {
-	var sensorReadings []domain.SensorReading
+func (repository *SensorReadingRepository) GetAll(ctx context.Context) ([]entities.SensorReading, error) {
+	var sensorReadings []entities.SensorReading
 	result := repository.db.WithContext(ctx).Find(&sensorReadings)
 
 	return sensorReadings, result.Error
 }
 
-func (repository *SensorReadingRepository) GetByID(ctx context.Context, id string) (domain.SensorReading, error) {
-	var sensorReading domain.SensorReading
+func (repository *SensorReadingRepository) GetByID(ctx context.Context, id string) (entities.SensorReading, error) {
+	var sensorReading entities.SensorReading
 	result := repository.db.WithContext(ctx).First(&sensorReading, id)
 
 	return sensorReading, result.Error

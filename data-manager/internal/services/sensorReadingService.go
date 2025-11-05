@@ -1,9 +1,9 @@
-package application
+package services
 
 import (
 	"context"
-	domain "data-manager/internal/domain"
-	interfaces "data-manager/internal/domain/interfaces"
+	domain "data-manager/internal/entities"
+	"data-manager/internal/repositories"
 	"errors"
 	"fmt"
 
@@ -11,10 +11,10 @@ import (
 )
 
 type SensorReadingService struct {
-	repository interfaces.SensorReadingRepository
+	repository repositories.SensorReadingRepository
 }
 
-func NewSensorReadingService(repository interfaces.SensorReadingRepository) *SensorReadingService {
+func NewSensorReadingService(repository repositories.SensorReadingRepository) *SensorReadingService {
 	return &SensorReadingService{repository: repository}
 }
 func (s *SensorReadingService) GetAllSensors(ctx context.Context) ([]domain.SensorReading, error) {
