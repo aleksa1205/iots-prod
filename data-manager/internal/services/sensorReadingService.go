@@ -11,12 +11,13 @@ import (
 )
 
 type SensorReadingService struct {
-	repository repositories.SensorReadingRepository
+	repository *repositories.SensorReadingRepository
 }
 
-func NewSensorReadingService(repository repositories.SensorReadingRepository) *SensorReadingService {
+func NewSensorReadingService(repository *repositories.SensorReadingRepository) *SensorReadingService {
 	return &SensorReadingService{repository: repository}
 }
+
 func (s *SensorReadingService) GetAllSensors(ctx context.Context) ([]domain.SensorReading, error) {
 	return s.repository.GetAll(ctx)
 }

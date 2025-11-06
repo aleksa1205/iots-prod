@@ -7,12 +7,12 @@ import (
 
 type SensorReadingHandler struct {
 	sensorpb.UnimplementedSensorReadingServiceServer
-	service services.SensorReadingService
+	service *services.SensorReadingService
 }
 
 var _ sensorpb.SensorReadingServiceServer = (*SensorReadingHandler)(nil)
 
-func NewSensorReadingHandler(service services.SensorReadingService) *SensorReadingHandler {
+func NewSensorReadingHandler(service *services.SensorReadingService) *SensorReadingHandler {
 	return &SensorReadingHandler{
 		UnimplementedSensorReadingServiceServer: sensorpb.UnimplementedSensorReadingServiceServer{},
 		service:                                 service}
