@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "internal/proto;sensorpb";
+
+import "google/protobuf/empty.proto";
+
+message SensorReadingGetByIdRequest{
+  string id = 1;
+}
+
+message SensorReadingResponse {
+  string id = 1;
+  double usedKw = 2;
+  double generatedKw = 3;
+  int64 time = 4;
+  float temperature = 5;
+  float humidity = 6;
+  float pressure = 7;
+  float apparentTemperature = 8;
+}
+
+service SensorReadingService{
+  rpc GetSensors(google.protobuf.Empty) returns(stream SensorReadingResponse);
+  rpc GetSensorById(SensorReadingGetByIdRequest) returns (SensorReadingResponse);
+}
