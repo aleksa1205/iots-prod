@@ -20,6 +20,6 @@ message SensorReadingResponse {
 }
 
 service SensorReadingService{
-  rpc GetSensors(google.protobuf.Empty) returns(stream SensorReadingResponse);
+  rpc GetSensors(google.protobuf.Empty) returns (stream SensorReadingResponse);
   rpc GetSensorById(SensorReadingGetByIdRequest) returns (SensorReadingResponse);
 }

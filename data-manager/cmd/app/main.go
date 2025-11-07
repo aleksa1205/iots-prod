@@ -6,9 +6,9 @@ import (
 	sensorpb "data-manager/internal/proto"
 	infrastructure "data-manager/internal/repositories"
 	"data-manager/internal/services"
+	"database/sql"
 	"log"
 	"net"
-	"os"
 
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
@@ -20,30 +20,34 @@ func InitServer() net.Listener {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	port := os.Getenv(config.EnvKeys.Port)
-	listen, err := net.Listen("tcp", port)
+	address := config.GetEnvOrPanic(config.EnvKeys.Host) + ":" + config.GetEnvOrPanic(config.EnvKeys.Port)
+	listen, err := net.Listen("tcp", address)
 	if err != nil {
-		log.Fatalf("Error listening for tcp connections on port %v: %v", port, err)
+		log.Fatalf("Error listening for tcp connections on %v: %v", address, err)
 	}
 
 	return listen
 }
 
-func DbConnect() *gorm.DB {
+func DbConnect() (*gorm.DB, *sql.DB) {
 	connectionString := config.GetEnvOrPanic(config.EnvKeys.DatabaseConnectionString)
 
 	db, err := infrastructure.ConnectToDatabase(connectionString)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	// Think about closing now here
-	//defer db.Close()
-	return db
+
+	sqlDb, err := db.DB()
+	if err != nil {
+		log.Fatalf("Failed to get raw database: %v", err)
+	}
+	return db, sqlDb
 }
 
 func main() {
 	lis := InitServer()
-	db := DbConnect()
+	db, sqlDb := DbConnect()
+	defer sqlDb.Close()
 
 	repository := infrastructure.NewSensorReadingRepository(db)
 	service := services.NewSensorReadingService(repository)
