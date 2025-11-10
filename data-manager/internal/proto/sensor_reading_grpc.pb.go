@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.33.0
-// source: internal/proto/sensor_reading.proto
+// source: sensor_reading.proto
 
 package sensorpb
 
@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	SensorReadingService_GetSensors_FullMethodName    = "/SensorReadingService/GetSensors"
 	SensorReadingService_GetSensorById_FullMethodName = "/SensorReadingService/GetSensorById"
+	SensorReadingService_CreateSensor_FullMethodName  = "/SensorReadingService/CreateSensor"
 )
 
 // SensorReadingServiceClient is the client API for SensorReadingService service.
@@ -30,6 +31,7 @@ const (
 type SensorReadingServiceClient interface {
 	GetSensors(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SensorReadingResponse], error)
 	GetSensorById(ctx context.Context, in *SensorReadingGetByIdRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
+	CreateSensor(ctx context.Context, in *CreateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 }
 
 type sensorReadingServiceClient struct {
@@ -69,12 +71,23 @@ func (c *sensorReadingServiceClient) GetSensorById(ctx context.Context, in *Sens
 	return out, nil
 }
 
+func (c *sensorReadingServiceClient) CreateSensor(ctx context.Context, in *CreateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SensorReadingResponse)
+	err := c.cc.Invoke(ctx, SensorReadingService_CreateSensor_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SensorReadingServiceServer is the server API for SensorReadingService service.
 // All implementations must embed UnimplementedSensorReadingServiceServer
 // for forward compatibility.
 type SensorReadingServiceServer interface {
 	GetSensors(*emptypb.Empty, grpc.ServerStreamingServer[SensorReadingResponse]) error
 	GetSensorById(context.Context, *SensorReadingGetByIdRequest) (*SensorReadingResponse, error)
+	CreateSensor(context.Context, *CreateSensorReadingRequest) (*SensorReadingResponse, error)
 	mustEmbedUnimplementedSensorReadingServiceServer()
 }
 
@@ -90,6 +103,9 @@ func (UnimplementedSensorReadingServiceServer) GetSensors(*emptypb.Empty, grpc.S
 }
 func (UnimplementedSensorReadingServiceServer) GetSensorById(context.Context, *SensorReadingGetByIdRequest) (*SensorReadingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSensorById not implemented")
+}
+func (UnimplementedSensorReadingServiceServer) CreateSensor(context.Context, *CreateSensorReadingRequest) (*SensorReadingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSensor not implemented")
 }
 func (UnimplementedSensorReadingServiceServer) mustEmbedUnimplementedSensorReadingServiceServer() {}
 func (UnimplementedSensorReadingServiceServer) testEmbeddedByValue()                              {}
@@ -141,6 +157,24 @@ func _SensorReadingService_GetSensorById_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SensorReadingService_CreateSensor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSensorReadingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SensorReadingServiceServer).CreateSensor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SensorReadingService_CreateSensor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SensorReadingServiceServer).CreateSensor(ctx, req.(*CreateSensorReadingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SensorReadingService_ServiceDesc is the grpc.ServiceDesc for SensorReadingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var SensorReadingService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetSensorById",
 			Handler:    _SensorReadingService_GetSensorById_Handler,
 		},
+		{
+			MethodName: "CreateSensor",
+			Handler:    _SensorReadingService_CreateSensor_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
@@ -160,5 +198,5 @@ var SensorReadingService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "internal/proto/sensor_reading.proto",
+	Metadata: "sensor_reading.proto",
 }
