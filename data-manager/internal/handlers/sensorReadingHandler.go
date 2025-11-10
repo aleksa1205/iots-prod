@@ -31,7 +31,7 @@ func (h *SensorReadingHandler) GetSensors(req *emptypb.Empty, stream sensorpb.Se
 	}
 
 	for _, sensor := range result {
-		response := dtos.ToProto(sensor)
+		response := dtos.ToProto(&sensor)
 
 		if err := stream.Send(response); err != nil {
 			return status.Errorf(codes.Internal, "Failed sending response: %v", err)
@@ -48,5 +48,14 @@ func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *senso
 
 	response := dtos.ToProto(sensor)
 
+	return response, nil
+}
+
+func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensorpb.CreateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
+	sensor, err := h.service.Create(ctx, dtos.ToRequest(request))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed creating sensor: %v", err)
+	}
+	response := dtos.ToProto(sensor)
 	return response, nil
 }

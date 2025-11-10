@@ -22,9 +22,13 @@ func (repository *SensorReadingRepository) GetAll(ctx context.Context) ([]entiti
 	return sensorReadings, result.Error
 }
 
-func (repository *SensorReadingRepository) GetByID(ctx context.Context, id string) (entities.SensorReading, error) {
+func (repository *SensorReadingRepository) GetByID(ctx context.Context, id string) (*entities.SensorReading, error) {
 	var sensorReading entities.SensorReading
-	result := repository.db.WithContext(ctx).First(&sensorReading, id)
+	result := repository.db.WithContext(ctx).First(&sensorReading, "id = ?", id)
 
-	return sensorReading, result.Error
+	return &sensorReading, result.Error
+}
+
+func (repository *SensorReadingRepository) Create(ctx context.Context, domain *entities.SensorReading) error {
+	return repository.db.WithContext(ctx).Create(&domain).Error
 }

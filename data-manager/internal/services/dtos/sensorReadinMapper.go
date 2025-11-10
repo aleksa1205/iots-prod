@@ -20,8 +20,8 @@ func ToResponse(request entities.SensorReading) SensorReadingResponse {
 	}
 }
 
-func ToDomain(request SensorReadingRequest) entities.SensorReading {
-	return entities.SensorReading{
+func ToDomain(request *SensorReadingRequest) *entities.SensorReading {
+	return &entities.SensorReading{
 		ID:                  uuid.New().String(),
 		UsedKW:              request.UsedKW,
 		GeneratedKW:         request.GeneratedKW,
@@ -33,7 +33,7 @@ func ToDomain(request SensorReadingRequest) entities.SensorReading {
 	}
 }
 
-func ToProto(response entities.SensorReading) *sensorpb.SensorReadingResponse {
+func ToProto(response *entities.SensorReading) *sensorpb.SensorReadingResponse {
 	return &sensorpb.SensorReadingResponse{
 		Id:                  response.ID,
 		UsedKw:              response.UsedKW,
@@ -43,5 +43,17 @@ func ToProto(response entities.SensorReading) *sensorpb.SensorReadingResponse {
 		ApparentTemperature: response.ApparentTemperature,
 		Pressure:            response.Pressure,
 		Humidity:            response.Humidity,
+	}
+}
+
+func ToRequest(request *sensorpb.CreateSensorReadingRequest) *SensorReadingRequest {
+	return &SensorReadingRequest{
+		UsedKW:              request.UsedKw,
+		GeneratedKW:         request.GeneratedKw,
+		Time:                request.Time,
+		Temperature:         request.Temperature,
+		ApparentTemperature: request.ApparentTemperature,
+		Pressure:            request.Pressure,
+		Humidity:            request.Humidity,
 	}
 }
