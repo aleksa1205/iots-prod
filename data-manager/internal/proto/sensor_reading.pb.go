@@ -22,27 +22,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type SensorReadingGetByIdRequest struct {
+type SensorReadingId struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *SensorReadingGetByIdRequest) Reset() {
-	*x = SensorReadingGetByIdRequest{}
+func (x *SensorReadingId) Reset() {
+	*x = SensorReadingId{}
 	mi := &file_sensor_reading_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SensorReadingGetByIdRequest) String() string {
+func (x *SensorReadingId) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SensorReadingGetByIdRequest) ProtoMessage() {}
+func (*SensorReadingId) ProtoMessage() {}
 
-func (x *SensorReadingGetByIdRequest) ProtoReflect() protoreflect.Message {
+func (x *SensorReadingId) ProtoReflect() protoreflect.Message {
 	mi := &file_sensor_reading_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -54,12 +54,12 @@ func (x *SensorReadingGetByIdRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SensorReadingGetByIdRequest.ProtoReflect.Descriptor instead.
-func (*SensorReadingGetByIdRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use SensorReadingId.ProtoReflect.Descriptor instead.
+func (*SensorReadingId) Descriptor() ([]byte, []int) {
 	return file_sensor_reading_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *SensorReadingGetByIdRequest) GetId() string {
+func (x *SensorReadingId) GetId() string {
 	if x != nil {
 		return x.Id
 	}
@@ -262,8 +262,8 @@ var File_sensor_reading_proto protoreflect.FileDescriptor
 
 const file_sensor_reading_proto_rawDesc = "" +
 	"\n" +
-	"\x14sensor_reading.proto\x1a\x1bgoogle/protobuf/empty.proto\"-\n" +
-	"\x1bSensorReadingGetByIdRequest\x12\x0e\n" +
+	"\x14sensor_reading.proto\x1a\x1bgoogle/protobuf/empty.proto\"!\n" +
+	"\x0fSensorReadingId\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\xf6\x01\n" +
 	"\x1aCreateSensorReadingRequest\x12\x16\n" +
 	"\x06usedKw\x18\x01 \x01(\x01R\x06usedKw\x12 \n" +
@@ -281,12 +281,14 @@ const file_sensor_reading_proto_rawDesc = "" +
 	"\vtemperature\x18\x05 \x01(\x02R\vtemperature\x12\x1a\n" +
 	"\bhumidity\x18\x06 \x01(\x02R\bhumidity\x12\x1a\n" +
 	"\bpressure\x18\a \x01(\x02R\bpressure\x120\n" +
-	"\x13apparentTemperature\x18\b \x01(\x02R\x13apparentTemperature2\xe2\x01\n" +
+	"\x13apparentTemperature\x18\b \x01(\x02R\x13apparentTemperature2\xd0\x02\n" +
 	"\x14SensorReadingService\x12>\n" +
 	"\n" +
-	"GetSensors\x12\x16.google.protobuf.Empty\x1a\x16.SensorReadingResponse0\x01\x12E\n" +
-	"\rGetSensorById\x12\x1c.SensorReadingGetByIdRequest\x1a\x16.SensorReadingResponse\x12C\n" +
-	"\fCreateSensor\x12\x1b.CreateSensorReadingRequest\x1a\x16.SensorReadingResponseB&Z$data-manager/internal/proto;sensorpbb\x06proto3"
+	"GetSensors\x12\x16.google.protobuf.Empty\x1a\x16.SensorReadingResponse0\x01\x129\n" +
+	"\rGetSensorById\x12\x10.SensorReadingId\x1a\x16.SensorReadingResponse\x12C\n" +
+	"\fCreateSensor\x12\x1b.CreateSensorReadingRequest\x1a\x16.SensorReadingResponse\x12>\n" +
+	"\fUpdateSensor\x12\x16.SensorReadingResponse\x1a\x16.SensorReadingResponse\x128\n" +
+	"\fDeleteSensor\x12\x10.SensorReadingId\x1a\x16.google.protobuf.EmptyB&Z$data-manager/internal/proto;sensorpbb\x06proto3"
 
 var (
 	file_sensor_reading_proto_rawDescOnce sync.Once
@@ -302,20 +304,24 @@ func file_sensor_reading_proto_rawDescGZIP() []byte {
 
 var file_sensor_reading_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_sensor_reading_proto_goTypes = []any{
-	(*SensorReadingGetByIdRequest)(nil), // 0: SensorReadingGetByIdRequest
-	(*CreateSensorReadingRequest)(nil),  // 1: CreateSensorReadingRequest
-	(*SensorReadingResponse)(nil),       // 2: SensorReadingResponse
-	(*emptypb.Empty)(nil),               // 3: google.protobuf.Empty
+	(*SensorReadingId)(nil),            // 0: SensorReadingId
+	(*CreateSensorReadingRequest)(nil), // 1: CreateSensorReadingRequest
+	(*SensorReadingResponse)(nil),      // 2: SensorReadingResponse
+	(*emptypb.Empty)(nil),              // 3: google.protobuf.Empty
 }
 var file_sensor_reading_proto_depIdxs = []int32{
 	3, // 0: SensorReadingService.GetSensors:input_type -> google.protobuf.Empty
-	0, // 1: SensorReadingService.GetSensorById:input_type -> SensorReadingGetByIdRequest
+	0, // 1: SensorReadingService.GetSensorById:input_type -> SensorReadingId
 	1, // 2: SensorReadingService.CreateSensor:input_type -> CreateSensorReadingRequest
-	2, // 3: SensorReadingService.GetSensors:output_type -> SensorReadingResponse
-	2, // 4: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
-	2, // 5: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	2, // 3: SensorReadingService.UpdateSensor:input_type -> SensorReadingResponse
+	0, // 4: SensorReadingService.DeleteSensor:input_type -> SensorReadingId
+	2, // 5: SensorReadingService.GetSensors:output_type -> SensorReadingResponse
+	2, // 6: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
+	2, // 7: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
+	2, // 8: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
+	3, // 9: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
+	5, // [5:10] is the sub-list for method output_type
+	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

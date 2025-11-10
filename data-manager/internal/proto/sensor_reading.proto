@@ -4,7 +4,7 @@ option go_package = "data-manager/internal/proto;sensorpb";
 
 import "google/protobuf/empty.proto";
 
-message SensorReadingGetByIdRequest{
+message SensorReadingId{
   string id = 1;
 }
 
@@ -31,6 +31,8 @@ message SensorReadingResponse {
 
 service SensorReadingService{
   rpc GetSensors(google.protobuf.Empty) returns (stream SensorReadingResponse);
-  rpc GetSensorById(SensorReadingGetByIdRequest) returns (SensorReadingResponse);
+  rpc GetSensorById(SensorReadingId) returns (SensorReadingResponse);
   rpc CreateSensor(CreateSensorReadingRequest) returns (SensorReadingResponse);
+  rpc UpdateSensor(SensorReadingResponse) returns (SensorReadingResponse);
+  rpc DeleteSensor(SensorReadingId) returns (google.protobuf.Empty);
 }
