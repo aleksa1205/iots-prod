@@ -40,7 +40,45 @@ func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorR
 
 	err := s.repository.Create(ctx, sensor)
 	if err != nil {
-		return &domain.SensorReading{}, fmt.Errorf("SensorReadingService: Creating sensor reading with id %s failed", sensor.ID)
+		return nil, fmt.Errorf("SensorReadingService: Creating sensor reading with id %s failed", sensor.ID)
 	}
 	return sensor, nil
+}
+
+func (s *SensorReadingService) Update(ctx context.Context, id string, request *dtos.SensorReadingRequest) (*domain.SensorReading, error) {
+	sensor, err := s.repository.GetByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("SensorReadingService: sensor reading with id %s not found", id)
+		}
+	}
+	if sensor == nil {
+		return nil, fmt.Errorf("SensorReadingService: sensor reading with id %s not found", id)
+	}
+
+	sensor.GeneratedKW = request.GeneratedKW
+	sensor.UsedKW = request.UsedKW
+	sensor.Temperature = request.Temperature
+	sensor.Humidity = request.Humidity
+	sensor.ApparentTemperature = request.ApparentTemperature
+	sensor.Pressure = request.Pressure
+
+	err = s.repository.Update(ctx, sensor)
+	if err != nil {
+		return nil, fmt.Errorf("SensorReadingService: Updating sensor reading with id %s failed", id)
+	}
+
+	return sensor, nil
+}
+
+func (s *SensorReadingService) Delete(ctx context.Context, id string) error {
+	sensor, err := s.repository.GetByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("SensorReadingService: Deleting sensor reading with id %s failed", id)
+	}
+	if sensor == nil {
+		return fmt.Errorf("SensorReadingService: Deleting sensor reading with id %s not found", id)
+	}
+
+	return s.repository.Delete(ctx, sensor)
 }

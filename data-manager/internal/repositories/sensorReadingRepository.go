@@ -32,3 +32,11 @@ func (repository *SensorReadingRepository) GetByID(ctx context.Context, id strin
 func (repository *SensorReadingRepository) Create(ctx context.Context, domain *entities.SensorReading) error {
 	return repository.db.WithContext(ctx).Create(&domain).Error
 }
+
+func (repository *SensorReadingRepository) Update(ctx context.Context, domain *entities.SensorReading) error {
+	return repository.db.WithContext(ctx).Where("id = ?", domain.ID).Updates(domain).Error
+}
+
+func (repository *SensorReadingRepository) Delete(ctx context.Context, domain *entities.SensorReading) error {
+	return repository.db.WithContext(ctx).Delete(&domain).Error
+}

@@ -40,7 +40,7 @@ func (h *SensorReadingHandler) GetSensors(req *emptypb.Empty, stream sensorpb.Se
 	return nil
 }
 
-func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *sensorpb.SensorReadingGetByIdRequest) (*sensorpb.SensorReadingResponse, error) {
+func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *sensorpb.SensorReadingId) (*sensorpb.SensorReadingResponse, error) {
 	sensor, err := h.service.GetByID(ctx, request.Id)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed getting sensor: %v", err)
@@ -58,4 +58,30 @@ func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensor
 	}
 	response := dtos.ToProto(sensor)
 	return response, nil
+}
+
+func (h *SensorReadingHandler) UpdateSensor(ctx context.Context, request *sensorpb.SensorReadingResponse) (*sensorpb.SensorReadingResponse, error) {
+	sensor, err := h.service.Update(ctx, request.Id, &dtos.SensorReadingRequest{
+		Pressure:            request.Pressure,
+		Temperature:         request.Temperature,
+		Humidity:            request.Humidity,
+		ApparentTemperature: request.ApparentTemperature,
+		UsedKW:              request.UsedKw,
+		GeneratedKW:         request.GeneratedKw,
+		Time:                request.Time,
+	})
+
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed updating sensor: %v", err)
+	}
+	response := dtos.ToProto(sensor)
+	return response, nil
+}
+
+func (h *SensorReadingHandler) DeleteSensor(ctx context.Context, request *sensorpb.SensorReadingId) (*emptypb.Empty, error) {
+	err := h.service.Delete(ctx, request.Id)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed deleting sensor: %v", err)
+	}
+	return &emptypb.Empty{}, nil
 }
