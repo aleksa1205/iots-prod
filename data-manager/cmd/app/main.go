@@ -41,6 +41,7 @@ func DbConnect() (*gorm.DB, *sql.DB) {
 	if err != nil {
 		log.Fatalf("Failed to get raw database: %v", err)
 	}
+
 	return db, sqlDb
 }
 
