@@ -80,6 +80,7 @@ func (h *SensorReadingHandler) UpdateSensor(ctx context.Context, request *sensor
 
 func (h *SensorReadingHandler) DeleteSensor(ctx context.Context, request *sensorpb.SensorReadingId) (*emptypb.Empty, error) {
 	err := h.service.Delete(ctx, request.Id)
+	
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed deleting sensor: %v", err)
 	}
