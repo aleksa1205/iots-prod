@@ -4,19 +4,23 @@ option go_package = "internal/proto;sensorpb";
 
 import "google/protobuf/empty.proto";
 
+message SensorData {
+  double usedKw = 1;
+  double generatedKw = 2;
+  int64 time = 3;
+  float temperature = 4;
+  float humidity = 5;
+  float pressure = 6;
+  float apparentTemperature = 7;
+}
+
 message SensorReadingGetByIdRequest{
   string id = 1;
 }
 
 message SensorReadingResponse {
   string id = 1;
-  double usedKw = 2;
-  double generatedKw = 3;
-  int64 time = 4;
-  float temperature = 5;
-  float humidity = 6;
-  float pressure = 7;
-  float apparentTemperature = 8;
+  SensorData data = 2;
 }
 
 service SensorReadingService{

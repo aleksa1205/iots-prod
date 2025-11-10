@@ -2,6 +2,7 @@ package dtos
 
 import (
 	"data-manager/internal/entities"
+	sensorpb "data-manager/internal/proto"
 
 	"github.com/google/uuid"
 )
@@ -29,5 +30,18 @@ func ToDomain(request SensorReadingRequest) entities.SensorReading {
 		ApparentTemperature: request.ApparentTemperature,
 		Pressure:            request.Pressure,
 		Humidity:            request.Humidity,
+	}
+}
+
+func ToProto(response entities.SensorReading) *sensorpb.SensorReadingResponse {
+	return &sensorpb.SensorReadingResponse{
+		Id:                  response.ID,
+		UsedKw:              response.UsedKW,
+		GeneratedKw:         response.GeneratedKW,
+		Time:                response.Time,
+		Temperature:         response.Temperature,
+		ApparentTemperature: response.ApparentTemperature,
+		Pressure:            response.Pressure,
+		Humidity:            response.Humidity,
 	}
 }

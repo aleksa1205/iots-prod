@@ -4,6 +4,7 @@ import (
 	"context"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/services"
+	"data-manager/internal/services/dtos"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -30,16 +31,7 @@ func (h *SensorReadingHandler) GetSensors(req *emptypb.Empty, stream sensorpb.Se
 	}
 
 	for _, sensor := range result {
-		response := &sensorpb.SensorReadingResponse{
-			Id:                  sensor.ID,
-			UsedKw:              sensor.UsedKW,
-			GeneratedKw:         sensor.GeneratedKW,
-			Time:                sensor.Time,
-			Temperature:         sensor.Temperature,
-			Humidity:            sensor.Humidity,
-			Pressure:            sensor.Pressure,
-			ApparentTemperature: sensor.ApparentTemperature,
-		}
+		response := dtos.ToProto(sensor)
 
 		if err := stream.Send(response); err != nil {
 			return status.Errorf(codes.Internal, "Failed sending response: %v", err)
@@ -54,16 +46,7 @@ func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *senso
 		return nil, status.Errorf(codes.Internal, "Failed getting sensor: %v", err)
 	}
 
-	response := &sensorpb.SensorReadingResponse{
-		Id:                  sensor.ID,
-		UsedKw:              sensor.UsedKW,
-		GeneratedKw:         sensor.GeneratedKW,
-		Time:                sensor.Time,
-		Temperature:         sensor.Temperature,
-		Humidity:            sensor.Humidity,
-		Pressure:            sensor.Pressure,
-		ApparentTemperature: sensor.ApparentTemperature,
-	}
+	response := dtos.ToProto(sensor)
 
 	return response, nil
 }
