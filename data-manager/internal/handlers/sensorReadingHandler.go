@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"data-manager/internal/entities"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/services"
 	"data-manager/internal/services/dtos"
@@ -31,7 +32,7 @@ func (h *SensorReadingHandler) GetSensors(req *emptypb.Empty, stream sensorpb.Se
 	}
 
 	for _, sensor := range result {
-		response := dtos.ToProto(&sensor)
+		response := entities.ToProto(&sensor)
 
 		if err := stream.Send(response); err != nil {
 			return status.Errorf(codes.Internal, "Failed sending response: %v", err)
@@ -46,7 +47,7 @@ func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *senso
 		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
 	}
 
-	response := dtos.ToProto(sensor)
+	response := entities.ToProto(sensor)
 
 	return response, nil
 }
@@ -57,7 +58,7 @@ func (h *SensorReadingHandler) GetSensorByMinUsage(ctx context.Context, request 
 		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
 	}
 
-	response := dtos.ToProto(sensor)
+	response := entities.ToProto(sensor)
 
 	return response, nil
 }
@@ -68,7 +69,7 @@ func (h *SensorReadingHandler) GetSensorByMaxUsage(ctx context.Context, request 
 		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
 	}
 
-	response := dtos.ToProto(sensor)
+	response := entities.ToProto(sensor)
 
 	return response, nil
 }
@@ -100,7 +101,7 @@ func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensor
 		return nil, status.Errorf(codes.Internal, "Failed creating sensor:\n%v", err)
 	}
 
-	response := dtos.ToProto(sensor)
+	response := entities.ToProto(sensor)
 	return response, nil
 }
 
@@ -110,7 +111,7 @@ func (h *SensorReadingHandler) UpdateSensor(ctx context.Context, request *sensor
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed updating sensor:\n%v", err)
 	}
-	response := dtos.ToProto(sensor)
+	response := entities.ToProto(sensor)
 	return response, nil
 }
 

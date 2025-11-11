@@ -20,21 +20,6 @@ func ToDomain(request *SensorReadingRequest) *entities.SensorReading {
 	}
 }
 
-func ToProto(response *entities.SensorReading) *sensorpb.SensorReadingResponse {
-	return &sensorpb.SensorReadingResponse{
-		Id: response.ID,
-		Data: &sensorpb.SensorReadingData{
-			UsedKw:              response.UsedKW,
-			GeneratedKw:         response.GeneratedKW,
-			Temperature:         response.Temperature,
-			ApparentTemperature: response.ApparentTemperature,
-			Pressure:            response.Pressure,
-			Humidity:            response.Humidity,
-			Time:                response.Time,
-		},
-	}
-}
-
 func ToRequest(request *sensorpb.CreateSensorReadingRequest) *SensorReadingRequest {
 	return &SensorReadingRequest{
 		UsedKW:              request.Data.UsedKw,
