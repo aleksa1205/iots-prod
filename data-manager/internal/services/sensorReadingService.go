@@ -24,10 +24,7 @@ func (s *SensorReadingService) GetByID(ctx context.Context, id string) (*domain.
 	sensor, err := s.repository.GetByID(ctx, id)
 
 	if err != nil {
-		return nil, fmt.Errorf("SensorReadingService: Getting sensor reading with id %s failed: \n Error: %w", id, err)
-	}
-	if sensor == nil {
-		return nil, fmt.Errorf("SensorReadingService: Sensor reading with id %s not found", id)
+		return nil, fmt.Errorf("SensorReadingService/GetById: Sensor with id %s not found", id)
 	}
 
 	return sensor, nil
@@ -38,7 +35,7 @@ func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorR
 	err := s.repository.Create(ctx, sensor)
 
 	if err != nil {
-		return nil, fmt.Errorf("SensorReadingService: Creating sensor reading failed: \n Error: %w", err)
+		return nil, fmt.Errorf("SensorReadingService/Create: Creating sensor reading failed\nError: %w", err)
 	}
 	return sensor, nil
 }
@@ -47,10 +44,7 @@ func (s *SensorReadingService) Update(ctx context.Context, id string, request *d
 	sensor, err := s.repository.GetByID(ctx, id)
 
 	if err != nil {
-		return nil, fmt.Errorf("SensorReadingService: Updating sensor reading with id %s failed: \n Error: %w", id, err)
-	}
-	if sensor == nil {
-		return nil, fmt.Errorf("SensorReadingService: Sensor reading with id %s not found", id)
+		return nil, fmt.Errorf("SensorReadingService/Update: Sensor with id %s not found", id)
 	}
 
 	sensor.GeneratedKW = request.GeneratedKW
@@ -63,7 +57,7 @@ func (s *SensorReadingService) Update(ctx context.Context, id string, request *d
 	err = s.repository.Update(ctx, sensor)
 
 	if err != nil {
-		return nil, fmt.Errorf("SensorReadingService: Updating sensor reading with id %s failed: \n Error: %w", id, err)
+		return nil, fmt.Errorf("SensorReadingService: Updating sensor reading with id %s failed\nError: %w", id, err)
 	}
 
 	return sensor, nil
@@ -73,10 +67,7 @@ func (s *SensorReadingService) Delete(ctx context.Context, id string) error {
 	sensor, err := s.repository.GetByID(ctx, id)
 
 	if err != nil {
-		return fmt.Errorf("SensorReadingService: Deleting sensor reading with id %s failed: \n Error: %w", id, err)
-	}
-	if sensor == nil {
-		return fmt.Errorf("SensorReadingService: Sensor reading with id %s not found", id)
+		return fmt.Errorf("SensorReadingService/Delete: Sensor with id %s not found", id)
 	}
 
 	return s.repository.Delete(ctx, sensor)

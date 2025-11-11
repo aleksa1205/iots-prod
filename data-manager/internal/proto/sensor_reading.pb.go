@@ -22,51 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type SensorReadingId struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SensorReadingId) Reset() {
-	*x = SensorReadingId{}
-	mi := &file_sensor_reading_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SensorReadingId) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SensorReadingId) ProtoMessage() {}
-
-func (x *SensorReadingId) ProtoReflect() protoreflect.Message {
-	mi := &file_sensor_reading_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SensorReadingId.ProtoReflect.Descriptor instead.
-func (*SensorReadingId) Descriptor() ([]byte, []int) {
-	return file_sensor_reading_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *SensorReadingId) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-type CreateSensorReadingRequest struct {
+type SensorReadingData struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
 	UsedKw              float64                `protobuf:"fixed64,1,opt,name=usedKw,proto3" json:"usedKw,omitempty"`
 	GeneratedKw         float64                `protobuf:"fixed64,2,opt,name=generatedKw,proto3" json:"generatedKw,omitempty"`
@@ -79,9 +35,139 @@ type CreateSensorReadingRequest struct {
 	sizeCache           protoimpl.SizeCache
 }
 
+func (x *SensorReadingData) Reset() {
+	*x = SensorReadingData{}
+	mi := &file_sensor_reading_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SensorReadingData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SensorReadingData) ProtoMessage() {}
+
+func (x *SensorReadingData) ProtoReflect() protoreflect.Message {
+	mi := &file_sensor_reading_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SensorReadingData.ProtoReflect.Descriptor instead.
+func (*SensorReadingData) Descriptor() ([]byte, []int) {
+	return file_sensor_reading_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *SensorReadingData) GetUsedKw() float64 {
+	if x != nil {
+		return x.UsedKw
+	}
+	return 0
+}
+
+func (x *SensorReadingData) GetGeneratedKw() float64 {
+	if x != nil {
+		return x.GeneratedKw
+	}
+	return 0
+}
+
+func (x *SensorReadingData) GetTime() int64 {
+	if x != nil {
+		return x.Time
+	}
+	return 0
+}
+
+func (x *SensorReadingData) GetTemperature() float32 {
+	if x != nil {
+		return x.Temperature
+	}
+	return 0
+}
+
+func (x *SensorReadingData) GetHumidity() float32 {
+	if x != nil {
+		return x.Humidity
+	}
+	return 0
+}
+
+func (x *SensorReadingData) GetPressure() float32 {
+	if x != nil {
+		return x.Pressure
+	}
+	return 0
+}
+
+func (x *SensorReadingData) GetApparentTemperature() float32 {
+	if x != nil {
+		return x.ApparentTemperature
+	}
+	return 0
+}
+
+type SensorReadingId struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SensorReadingId) Reset() {
+	*x = SensorReadingId{}
+	mi := &file_sensor_reading_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SensorReadingId) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SensorReadingId) ProtoMessage() {}
+
+func (x *SensorReadingId) ProtoReflect() protoreflect.Message {
+	mi := &file_sensor_reading_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SensorReadingId.ProtoReflect.Descriptor instead.
+func (*SensorReadingId) Descriptor() ([]byte, []int) {
+	return file_sensor_reading_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *SensorReadingId) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type CreateSensorReadingRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Data          *SensorReadingData     `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
 func (x *CreateSensorReadingRequest) Reset() {
 	*x = CreateSensorReadingRequest{}
-	mi := &file_sensor_reading_proto_msgTypes[1]
+	mi := &file_sensor_reading_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -93,7 +179,7 @@ func (x *CreateSensorReadingRequest) String() string {
 func (*CreateSensorReadingRequest) ProtoMessage() {}
 
 func (x *CreateSensorReadingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sensor_reading_proto_msgTypes[1]
+	mi := &file_sensor_reading_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -106,75 +192,79 @@ func (x *CreateSensorReadingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSensorReadingRequest.ProtoReflect.Descriptor instead.
 func (*CreateSensorReadingRequest) Descriptor() ([]byte, []int) {
-	return file_sensor_reading_proto_rawDescGZIP(), []int{1}
+	return file_sensor_reading_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *CreateSensorReadingRequest) GetUsedKw() float64 {
+func (x *CreateSensorReadingRequest) GetData() *SensorReadingData {
 	if x != nil {
-		return x.UsedKw
+		return x.Data
 	}
-	return 0
+	return nil
 }
 
-func (x *CreateSensorReadingRequest) GetGeneratedKw() float64 {
-	if x != nil {
-		return x.GeneratedKw
-	}
-	return 0
+type UpdateSensorReadingRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Data          *SensorReadingData     `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateSensorReadingRequest) GetTime() int64 {
-	if x != nil {
-		return x.Time
-	}
-	return 0
+func (x *UpdateSensorReadingRequest) Reset() {
+	*x = UpdateSensorReadingRequest{}
+	mi := &file_sensor_reading_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateSensorReadingRequest) GetTemperature() float32 {
-	if x != nil {
-		return x.Temperature
-	}
-	return 0
+func (x *UpdateSensorReadingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
 }
 
-func (x *CreateSensorReadingRequest) GetHumidity() float32 {
+func (*UpdateSensorReadingRequest) ProtoMessage() {}
+
+func (x *UpdateSensorReadingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sensor_reading_proto_msgTypes[3]
 	if x != nil {
-		return x.Humidity
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
 	}
-	return 0
+	return mi.MessageOf(x)
 }
 
-func (x *CreateSensorReadingRequest) GetPressure() float32 {
-	if x != nil {
-		return x.Pressure
-	}
-	return 0
+// Deprecated: Use UpdateSensorReadingRequest.ProtoReflect.Descriptor instead.
+func (*UpdateSensorReadingRequest) Descriptor() ([]byte, []int) {
+	return file_sensor_reading_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *CreateSensorReadingRequest) GetApparentTemperature() float32 {
+func (x *UpdateSensorReadingRequest) GetId() string {
 	if x != nil {
-		return x.ApparentTemperature
+		return x.Id
 	}
-	return 0
+	return ""
+}
+
+func (x *UpdateSensorReadingRequest) GetData() *SensorReadingData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
 }
 
 type SensorReadingResponse struct {
-	state               protoimpl.MessageState `protogen:"open.v1"`
-	Id                  string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	UsedKw              float64                `protobuf:"fixed64,2,opt,name=usedKw,proto3" json:"usedKw,omitempty"`
-	GeneratedKw         float64                `protobuf:"fixed64,3,opt,name=generatedKw,proto3" json:"generatedKw,omitempty"`
-	Time                int64                  `protobuf:"varint,4,opt,name=time,proto3" json:"time,omitempty"`
-	Temperature         float32                `protobuf:"fixed32,5,opt,name=temperature,proto3" json:"temperature,omitempty"`
-	Humidity            float32                `protobuf:"fixed32,6,opt,name=humidity,proto3" json:"humidity,omitempty"`
-	Pressure            float32                `protobuf:"fixed32,7,opt,name=pressure,proto3" json:"pressure,omitempty"`
-	ApparentTemperature float32                `protobuf:"fixed32,8,opt,name=apparentTemperature,proto3" json:"apparentTemperature,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Data          *SensorReadingData     `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SensorReadingResponse) Reset() {
 	*x = SensorReadingResponse{}
-	mi := &file_sensor_reading_proto_msgTypes[2]
+	mi := &file_sensor_reading_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -186,7 +276,7 @@ func (x *SensorReadingResponse) String() string {
 func (*SensorReadingResponse) ProtoMessage() {}
 
 func (x *SensorReadingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sensor_reading_proto_msgTypes[2]
+	mi := &file_sensor_reading_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -199,7 +289,7 @@ func (x *SensorReadingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SensorReadingResponse.ProtoReflect.Descriptor instead.
 func (*SensorReadingResponse) Descriptor() ([]byte, []int) {
-	return file_sensor_reading_proto_rawDescGZIP(), []int{2}
+	return file_sensor_reading_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SensorReadingResponse) GetId() string {
@@ -209,85 +299,42 @@ func (x *SensorReadingResponse) GetId() string {
 	return ""
 }
 
-func (x *SensorReadingResponse) GetUsedKw() float64 {
+func (x *SensorReadingResponse) GetData() *SensorReadingData {
 	if x != nil {
-		return x.UsedKw
+		return x.Data
 	}
-	return 0
-}
-
-func (x *SensorReadingResponse) GetGeneratedKw() float64 {
-	if x != nil {
-		return x.GeneratedKw
-	}
-	return 0
-}
-
-func (x *SensorReadingResponse) GetTime() int64 {
-	if x != nil {
-		return x.Time
-	}
-	return 0
-}
-
-func (x *SensorReadingResponse) GetTemperature() float32 {
-	if x != nil {
-		return x.Temperature
-	}
-	return 0
-}
-
-func (x *SensorReadingResponse) GetHumidity() float32 {
-	if x != nil {
-		return x.Humidity
-	}
-	return 0
-}
-
-func (x *SensorReadingResponse) GetPressure() float32 {
-	if x != nil {
-		return x.Pressure
-	}
-	return 0
-}
-
-func (x *SensorReadingResponse) GetApparentTemperature() float32 {
-	if x != nil {
-		return x.ApparentTemperature
-	}
-	return 0
+	return nil
 }
 
 var File_sensor_reading_proto protoreflect.FileDescriptor
 
 const file_sensor_reading_proto_rawDesc = "" +
 	"\n" +
-	"\x14sensor_reading.proto\x1a\x1bgoogle/protobuf/empty.proto\"!\n" +
-	"\x0fSensorReadingId\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"\xf6\x01\n" +
-	"\x1aCreateSensorReadingRequest\x12\x16\n" +
+	"\x14sensor_reading.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xed\x01\n" +
+	"\x11SensorReadingData\x12\x16\n" +
 	"\x06usedKw\x18\x01 \x01(\x01R\x06usedKw\x12 \n" +
 	"\vgeneratedKw\x18\x02 \x01(\x01R\vgeneratedKw\x12\x12\n" +
 	"\x04time\x18\x03 \x01(\x03R\x04time\x12 \n" +
 	"\vtemperature\x18\x04 \x01(\x02R\vtemperature\x12\x1a\n" +
 	"\bhumidity\x18\x05 \x01(\x02R\bhumidity\x12\x1a\n" +
 	"\bpressure\x18\x06 \x01(\x02R\bpressure\x120\n" +
-	"\x13apparentTemperature\x18\a \x01(\x02R\x13apparentTemperature\"\x81\x02\n" +
+	"\x13apparentTemperature\x18\a \x01(\x02R\x13apparentTemperature\"!\n" +
+	"\x0fSensorReadingId\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"D\n" +
+	"\x1aCreateSensorReadingRequest\x12&\n" +
+	"\x04data\x18\x01 \x01(\v2\x12.SensorReadingDataR\x04data\"T\n" +
+	"\x1aUpdateSensorReadingRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12&\n" +
+	"\x04data\x18\x02 \x01(\v2\x12.SensorReadingDataR\x04data\"O\n" +
 	"\x15SensorReadingResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
-	"\x06usedKw\x18\x02 \x01(\x01R\x06usedKw\x12 \n" +
-	"\vgeneratedKw\x18\x03 \x01(\x01R\vgeneratedKw\x12\x12\n" +
-	"\x04time\x18\x04 \x01(\x03R\x04time\x12 \n" +
-	"\vtemperature\x18\x05 \x01(\x02R\vtemperature\x12\x1a\n" +
-	"\bhumidity\x18\x06 \x01(\x02R\bhumidity\x12\x1a\n" +
-	"\bpressure\x18\a \x01(\x02R\bpressure\x120\n" +
-	"\x13apparentTemperature\x18\b \x01(\x02R\x13apparentTemperature2\xd0\x02\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12&\n" +
+	"\x04data\x18\x02 \x01(\v2\x12.SensorReadingDataR\x04data2\xd5\x02\n" +
 	"\x14SensorReadingService\x12>\n" +
 	"\n" +
 	"GetSensors\x12\x16.google.protobuf.Empty\x1a\x16.SensorReadingResponse0\x01\x129\n" +
 	"\rGetSensorById\x12\x10.SensorReadingId\x1a\x16.SensorReadingResponse\x12C\n" +
-	"\fCreateSensor\x12\x1b.CreateSensorReadingRequest\x1a\x16.SensorReadingResponse\x12>\n" +
-	"\fUpdateSensor\x12\x16.SensorReadingResponse\x1a\x16.SensorReadingResponse\x128\n" +
+	"\fCreateSensor\x12\x1b.CreateSensorReadingRequest\x1a\x16.SensorReadingResponse\x12C\n" +
+	"\fUpdateSensor\x12\x1b.UpdateSensorReadingRequest\x1a\x16.SensorReadingResponse\x128\n" +
 	"\fDeleteSensor\x12\x10.SensorReadingId\x1a\x16.google.protobuf.EmptyB&Z$data-manager/internal/proto;sensorpbb\x06proto3"
 
 var (
@@ -302,29 +349,34 @@ func file_sensor_reading_proto_rawDescGZIP() []byte {
 	return file_sensor_reading_proto_rawDescData
 }
 
-var file_sensor_reading_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_sensor_reading_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_sensor_reading_proto_goTypes = []any{
-	(*SensorReadingId)(nil),            // 0: SensorReadingId
-	(*CreateSensorReadingRequest)(nil), // 1: CreateSensorReadingRequest
-	(*SensorReadingResponse)(nil),      // 2: SensorReadingResponse
-	(*emptypb.Empty)(nil),              // 3: google.protobuf.Empty
+	(*SensorReadingData)(nil),          // 0: SensorReadingData
+	(*SensorReadingId)(nil),            // 1: SensorReadingId
+	(*CreateSensorReadingRequest)(nil), // 2: CreateSensorReadingRequest
+	(*UpdateSensorReadingRequest)(nil), // 3: UpdateSensorReadingRequest
+	(*SensorReadingResponse)(nil),      // 4: SensorReadingResponse
+	(*emptypb.Empty)(nil),              // 5: google.protobuf.Empty
 }
 var file_sensor_reading_proto_depIdxs = []int32{
-	3, // 0: SensorReadingService.GetSensors:input_type -> google.protobuf.Empty
-	0, // 1: SensorReadingService.GetSensorById:input_type -> SensorReadingId
-	1, // 2: SensorReadingService.CreateSensor:input_type -> CreateSensorReadingRequest
-	2, // 3: SensorReadingService.UpdateSensor:input_type -> SensorReadingResponse
-	0, // 4: SensorReadingService.DeleteSensor:input_type -> SensorReadingId
-	2, // 5: SensorReadingService.GetSensors:output_type -> SensorReadingResponse
-	2, // 6: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
-	2, // 7: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
-	2, // 8: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
-	3, // 9: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: CreateSensorReadingRequest.data:type_name -> SensorReadingData
+	0, // 1: UpdateSensorReadingRequest.data:type_name -> SensorReadingData
+	0, // 2: SensorReadingResponse.data:type_name -> SensorReadingData
+	5, // 3: SensorReadingService.GetSensors:input_type -> google.protobuf.Empty
+	1, // 4: SensorReadingService.GetSensorById:input_type -> SensorReadingId
+	2, // 5: SensorReadingService.CreateSensor:input_type -> CreateSensorReadingRequest
+	3, // 6: SensorReadingService.UpdateSensor:input_type -> UpdateSensorReadingRequest
+	1, // 7: SensorReadingService.DeleteSensor:input_type -> SensorReadingId
+	4, // 8: SensorReadingService.GetSensors:output_type -> SensorReadingResponse
+	4, // 9: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
+	4, // 10: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
+	4, // 11: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
+	5, // 12: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
+	8, // [8:13] is the sub-list for method output_type
+	3, // [3:8] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_sensor_reading_proto_init() }
@@ -338,7 +390,7 @@ func file_sensor_reading_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sensor_reading_proto_rawDesc), len(file_sensor_reading_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

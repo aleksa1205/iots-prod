@@ -34,7 +34,7 @@ type SensorReadingServiceClient interface {
 	GetSensors(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SensorReadingResponse], error)
 	GetSensorById(ctx context.Context, in *SensorReadingId, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	CreateSensor(ctx context.Context, in *CreateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
-	UpdateSensor(ctx context.Context, in *SensorReadingResponse, opts ...grpc.CallOption) (*SensorReadingResponse, error)
+	UpdateSensor(ctx context.Context, in *UpdateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	DeleteSensor(ctx context.Context, in *SensorReadingId, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -85,7 +85,7 @@ func (c *sensorReadingServiceClient) CreateSensor(ctx context.Context, in *Creat
 	return out, nil
 }
 
-func (c *sensorReadingServiceClient) UpdateSensor(ctx context.Context, in *SensorReadingResponse, opts ...grpc.CallOption) (*SensorReadingResponse, error) {
+func (c *sensorReadingServiceClient) UpdateSensor(ctx context.Context, in *UpdateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SensorReadingResponse)
 	err := c.cc.Invoke(ctx, SensorReadingService_UpdateSensor_FullMethodName, in, out, cOpts...)
@@ -112,7 +112,7 @@ type SensorReadingServiceServer interface {
 	GetSensors(*emptypb.Empty, grpc.ServerStreamingServer[SensorReadingResponse]) error
 	GetSensorById(context.Context, *SensorReadingId) (*SensorReadingResponse, error)
 	CreateSensor(context.Context, *CreateSensorReadingRequest) (*SensorReadingResponse, error)
-	UpdateSensor(context.Context, *SensorReadingResponse) (*SensorReadingResponse, error)
+	UpdateSensor(context.Context, *UpdateSensorReadingRequest) (*SensorReadingResponse, error)
 	DeleteSensor(context.Context, *SensorReadingId) (*emptypb.Empty, error)
 	mustEmbedUnimplementedSensorReadingServiceServer()
 }
@@ -133,7 +133,7 @@ func (UnimplementedSensorReadingServiceServer) GetSensorById(context.Context, *S
 func (UnimplementedSensorReadingServiceServer) CreateSensor(context.Context, *CreateSensorReadingRequest) (*SensorReadingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateSensor not implemented")
 }
-func (UnimplementedSensorReadingServiceServer) UpdateSensor(context.Context, *SensorReadingResponse) (*SensorReadingResponse, error) {
+func (UnimplementedSensorReadingServiceServer) UpdateSensor(context.Context, *UpdateSensorReadingRequest) (*SensorReadingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSensor not implemented")
 }
 func (UnimplementedSensorReadingServiceServer) DeleteSensor(context.Context, *SensorReadingId) (*emptypb.Empty, error) {
@@ -208,7 +208,7 @@ func _SensorReadingService_CreateSensor_Handler(srv interface{}, ctx context.Con
 }
 
 func _SensorReadingService_UpdateSensor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SensorReadingResponse)
+	in := new(UpdateSensorReadingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func _SensorReadingService_UpdateSensor_Handler(srv interface{}, ctx context.Con
 		FullMethod: SensorReadingService_UpdateSensor_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SensorReadingServiceServer).UpdateSensor(ctx, req.(*SensorReadingResponse))
+		return srv.(SensorReadingServiceServer).UpdateSensor(ctx, req.(*UpdateSensorReadingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

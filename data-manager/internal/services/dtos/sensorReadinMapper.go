@@ -7,19 +7,6 @@ import (
 	"github.com/google/uuid"
 )
 
-func ToResponse(request entities.SensorReading) SensorReadingResponse {
-	return SensorReadingResponse{
-		ID:                  request.ID,
-		UsedKW:              request.UsedKW,
-		GeneratedKW:         request.GeneratedKW,
-		Time:                request.Time,
-		Temperature:         request.Temperature,
-		ApparentTemperature: request.ApparentTemperature,
-		Pressure:            request.Pressure,
-		Humidity:            request.Humidity,
-	}
-}
-
 func ToDomain(request *SensorReadingRequest) *entities.SensorReading {
 	return &entities.SensorReading{
 		ID:                  uuid.New().String(),
@@ -35,25 +22,39 @@ func ToDomain(request *SensorReadingRequest) *entities.SensorReading {
 
 func ToProto(response *entities.SensorReading) *sensorpb.SensorReadingResponse {
 	return &sensorpb.SensorReadingResponse{
-		Id:                  response.ID,
-		UsedKw:              response.UsedKW,
-		GeneratedKw:         response.GeneratedKW,
-		Time:                response.Time,
-		Temperature:         response.Temperature,
-		ApparentTemperature: response.ApparentTemperature,
-		Pressure:            response.Pressure,
-		Humidity:            response.Humidity,
+		Id: response.ID,
+		Data: &sensorpb.SensorReadingData{
+			UsedKw:              response.UsedKW,
+			GeneratedKw:         response.GeneratedKW,
+			Temperature:         response.Temperature,
+			ApparentTemperature: response.ApparentTemperature,
+			Pressure:            response.Pressure,
+			Humidity:            response.Humidity,
+			Time:                response.Time,
+		},
 	}
 }
 
 func ToRequest(request *sensorpb.CreateSensorReadingRequest) *SensorReadingRequest {
 	return &SensorReadingRequest{
-		UsedKW:              request.UsedKw,
-		GeneratedKW:         request.GeneratedKw,
-		Time:                request.Time,
-		Temperature:         request.Temperature,
-		ApparentTemperature: request.ApparentTemperature,
-		Pressure:            request.Pressure,
-		Humidity:            request.Humidity,
+		UsedKW:              request.Data.UsedKw,
+		GeneratedKW:         request.Data.GeneratedKw,
+		Temperature:         request.Data.Temperature,
+		ApparentTemperature: request.Data.ApparentTemperature,
+		Pressure:            request.Data.Pressure,
+		Humidity:            request.Data.Humidity,
+		Time:                request.Data.Time,
+	}
+}
+
+func ToUpdateRequest(request *sensorpb.UpdateSensorReadingRequest) *SensorReadingRequest {
+	return &SensorReadingRequest{
+		UsedKW:              request.Data.UsedKw,
+		GeneratedKW:         request.Data.GeneratedKw,
+		Temperature:         request.Data.Temperature,
+		ApparentTemperature: request.Data.ApparentTemperature,
+		Pressure:            request.Data.Pressure,
+		Humidity:            request.Data.Humidity,
+		Time:                request.Data.Time,
 	}
 }

@@ -4,11 +4,7 @@ option go_package = "data-manager/internal/proto;sensorpb";
 
 import "google/protobuf/empty.proto";
 
-message SensorReadingId{
-  string id = 1;
-}
-
-message CreateSensorReadingRequest{
+message SensorReadingData {
   double usedKw = 1;
   double generatedKw = 2;
   int64 time = 3;
@@ -18,21 +14,28 @@ message CreateSensorReadingRequest{
   float apparentTemperature = 7;
 }
 
+message SensorReadingId{
+  string id = 1;
+}
+
+message CreateSensorReadingRequest{
+  SensorReadingData data = 1;
+}
+
+message UpdateSensorReadingRequest{
+  string id = 1;
+  SensorReadingData data = 2;
+}
+
 message SensorReadingResponse {
   string id = 1;
-  double usedKw = 2;
-  double generatedKw = 3;
-  int64 time = 4;
-  float temperature = 5;
-  float humidity = 6;
-  float pressure = 7;
-  float apparentTemperature = 8;
+  SensorReadingData data = 2;
 }
 
 service SensorReadingService{
   rpc GetSensors(google.protobuf.Empty) returns (stream SensorReadingResponse);
   rpc GetSensorById(SensorReadingId) returns (SensorReadingResponse);
   rpc CreateSensor(CreateSensorReadingRequest) returns (SensorReadingResponse);
-  rpc UpdateSensor(SensorReadingResponse) returns (SensorReadingResponse);
+  rpc UpdateSensor(UpdateSensorReadingRequest) returns (SensorReadingResponse);
   rpc DeleteSensor(SensorReadingId) returns (google.protobuf.Empty);
 }
