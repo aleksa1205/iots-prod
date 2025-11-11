@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"data-manager/internal/entities"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -19,12 +20,28 @@ func (r *SensorReadingRepository) DbWithCtx(ctx context.Context) *gorm.DB {
 	return r.db.WithContext(ctx)
 }
 
-func (r *SensorReadingRepository) GetAll(ctx context.Context) ([]entities.SensorReading, error) {
+func (r *SensorReadingRepository) GetAll(ctx context.Context, pageSize int, pageNumber int) ([]entities.SensorReading, int64, error) {
 	var readings []entities.SensorReading
+	var totalItems int64
+
 	err := r.DbWithCtx(ctx).
 		Model(&entities.SensorReading{}).
+		Count(&totalItems).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	offset := pageSize * (pageNumber - 1)
+	err = r.DbWithCtx(ctx).
+		Model(&entities.SensorReading{}).
+		Limit(pageSize).
+		Offset(offset).
 		Find(&readings).Error
-	return readings, err
+	fmt.Println(readings)
+	fmt.Println(totalItems)
+	fmt.Println(offset)
+	fmt.Println(pageSize)
+	fmt.Println(pageNumber)
+	return readings, totalItems, err
 }
 
 func (r *SensorReadingRepository) GetByID(ctx context.Context, id string) (*entities.SensorReading, error) {

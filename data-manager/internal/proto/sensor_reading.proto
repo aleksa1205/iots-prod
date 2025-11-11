@@ -18,6 +18,20 @@ message SensorReadingId{
   string id = 1;
 }
 
+message PaginationRequest {
+  int32 pageSize = 1;
+  int32 pageNumber = 2;
+}
+
+message PaginationSensorReadingResponse{
+  repeated SensorReadingResponse items = 1;
+  int32 pageSize = 2;
+  int32 pageNumber = 3;
+  bool hasPreviousPage = 4;
+  bool hasNextPage = 5;
+  int32 totalItems = 6;
+}
+
 message CreateSensorReadingRequest{
   SensorReadingData data = 1;
 }
@@ -41,9 +55,11 @@ message NumericAggregationResponse {
   double value = 1;
 }
 
+//Add pagination to get all
+
 service SensorReadingService{
   // CRUD
-  rpc GetSensors(google.protobuf.Empty) returns (stream SensorReadingResponse);
+  rpc GetSensors(PaginationRequest) returns (PaginationSensorReadingResponse);
   rpc GetSensorById(SensorReadingId) returns (SensorReadingResponse);
   rpc CreateSensor(CreateSensorReadingRequest) returns (SensorReadingResponse);
   rpc UpdateSensor(UpdateSensorReadingRequest) returns (SensorReadingResponse);

@@ -158,6 +158,142 @@ func (x *SensorReadingId) GetId() string {
 	return ""
 }
 
+type PaginationRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PageSize      int32                  `protobuf:"varint,1,opt,name=pageSize,proto3" json:"pageSize,omitempty"`
+	PageNumber    int32                  `protobuf:"varint,2,opt,name=pageNumber,proto3" json:"pageNumber,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PaginationRequest) Reset() {
+	*x = PaginationRequest{}
+	mi := &file_sensor_reading_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaginationRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaginationRequest) ProtoMessage() {}
+
+func (x *PaginationRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sensor_reading_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaginationRequest.ProtoReflect.Descriptor instead.
+func (*PaginationRequest) Descriptor() ([]byte, []int) {
+	return file_sensor_reading_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *PaginationRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *PaginationRequest) GetPageNumber() int32 {
+	if x != nil {
+		return x.PageNumber
+	}
+	return 0
+}
+
+type PaginationSensorReadingResponse struct {
+	state           protoimpl.MessageState   `protogen:"open.v1"`
+	Items           []*SensorReadingResponse `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	PageSize        int32                    `protobuf:"varint,2,opt,name=pageSize,proto3" json:"pageSize,omitempty"`
+	PageNumber      int32                    `protobuf:"varint,3,opt,name=pageNumber,proto3" json:"pageNumber,omitempty"`
+	HasPreviousPage bool                     `protobuf:"varint,4,opt,name=hasPreviousPage,proto3" json:"hasPreviousPage,omitempty"`
+	HasNextPage     bool                     `protobuf:"varint,5,opt,name=hasNextPage,proto3" json:"hasNextPage,omitempty"`
+	TotalItems      int32                    `protobuf:"varint,6,opt,name=totalItems,proto3" json:"totalItems,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *PaginationSensorReadingResponse) Reset() {
+	*x = PaginationSensorReadingResponse{}
+	mi := &file_sensor_reading_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaginationSensorReadingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaginationSensorReadingResponse) ProtoMessage() {}
+
+func (x *PaginationSensorReadingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sensor_reading_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaginationSensorReadingResponse.ProtoReflect.Descriptor instead.
+func (*PaginationSensorReadingResponse) Descriptor() ([]byte, []int) {
+	return file_sensor_reading_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *PaginationSensorReadingResponse) GetItems() []*SensorReadingResponse {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *PaginationSensorReadingResponse) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *PaginationSensorReadingResponse) GetPageNumber() int32 {
+	if x != nil {
+		return x.PageNumber
+	}
+	return 0
+}
+
+func (x *PaginationSensorReadingResponse) GetHasPreviousPage() bool {
+	if x != nil {
+		return x.HasPreviousPage
+	}
+	return false
+}
+
+func (x *PaginationSensorReadingResponse) GetHasNextPage() bool {
+	if x != nil {
+		return x.HasNextPage
+	}
+	return false
+}
+
+func (x *PaginationSensorReadingResponse) GetTotalItems() int32 {
+	if x != nil {
+		return x.TotalItems
+	}
+	return 0
+}
+
 type CreateSensorReadingRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Data          *SensorReadingData     `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
@@ -167,7 +303,7 @@ type CreateSensorReadingRequest struct {
 
 func (x *CreateSensorReadingRequest) Reset() {
 	*x = CreateSensorReadingRequest{}
-	mi := &file_sensor_reading_proto_msgTypes[2]
+	mi := &file_sensor_reading_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -179,7 +315,7 @@ func (x *CreateSensorReadingRequest) String() string {
 func (*CreateSensorReadingRequest) ProtoMessage() {}
 
 func (x *CreateSensorReadingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sensor_reading_proto_msgTypes[2]
+	mi := &file_sensor_reading_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -192,7 +328,7 @@ func (x *CreateSensorReadingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSensorReadingRequest.ProtoReflect.Descriptor instead.
 func (*CreateSensorReadingRequest) Descriptor() ([]byte, []int) {
-	return file_sensor_reading_proto_rawDescGZIP(), []int{2}
+	return file_sensor_reading_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateSensorReadingRequest) GetData() *SensorReadingData {
@@ -212,7 +348,7 @@ type UpdateSensorReadingRequest struct {
 
 func (x *UpdateSensorReadingRequest) Reset() {
 	*x = UpdateSensorReadingRequest{}
-	mi := &file_sensor_reading_proto_msgTypes[3]
+	mi := &file_sensor_reading_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -224,7 +360,7 @@ func (x *UpdateSensorReadingRequest) String() string {
 func (*UpdateSensorReadingRequest) ProtoMessage() {}
 
 func (x *UpdateSensorReadingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sensor_reading_proto_msgTypes[3]
+	mi := &file_sensor_reading_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -237,7 +373,7 @@ func (x *UpdateSensorReadingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSensorReadingRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSensorReadingRequest) Descriptor() ([]byte, []int) {
-	return file_sensor_reading_proto_rawDescGZIP(), []int{3}
+	return file_sensor_reading_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UpdateSensorReadingRequest) GetId() string {
@@ -264,7 +400,7 @@ type SensorReadingResponse struct {
 
 func (x *SensorReadingResponse) Reset() {
 	*x = SensorReadingResponse{}
-	mi := &file_sensor_reading_proto_msgTypes[4]
+	mi := &file_sensor_reading_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -276,7 +412,7 @@ func (x *SensorReadingResponse) String() string {
 func (*SensorReadingResponse) ProtoMessage() {}
 
 func (x *SensorReadingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sensor_reading_proto_msgTypes[4]
+	mi := &file_sensor_reading_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -289,7 +425,7 @@ func (x *SensorReadingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SensorReadingResponse.ProtoReflect.Descriptor instead.
 func (*SensorReadingResponse) Descriptor() ([]byte, []int) {
-	return file_sensor_reading_proto_rawDescGZIP(), []int{4}
+	return file_sensor_reading_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SensorReadingResponse) GetId() string {
@@ -316,7 +452,7 @@ type TimeRangeRequest struct {
 
 func (x *TimeRangeRequest) Reset() {
 	*x = TimeRangeRequest{}
-	mi := &file_sensor_reading_proto_msgTypes[5]
+	mi := &file_sensor_reading_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -328,7 +464,7 @@ func (x *TimeRangeRequest) String() string {
 func (*TimeRangeRequest) ProtoMessage() {}
 
 func (x *TimeRangeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_sensor_reading_proto_msgTypes[5]
+	mi := &file_sensor_reading_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -341,7 +477,7 @@ func (x *TimeRangeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimeRangeRequest.ProtoReflect.Descriptor instead.
 func (*TimeRangeRequest) Descriptor() ([]byte, []int) {
-	return file_sensor_reading_proto_rawDescGZIP(), []int{5}
+	return file_sensor_reading_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *TimeRangeRequest) GetStart() int64 {
@@ -367,7 +503,7 @@ type NumericAggregationResponse struct {
 
 func (x *NumericAggregationResponse) Reset() {
 	*x = NumericAggregationResponse{}
-	mi := &file_sensor_reading_proto_msgTypes[6]
+	mi := &file_sensor_reading_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -379,7 +515,7 @@ func (x *NumericAggregationResponse) String() string {
 func (*NumericAggregationResponse) ProtoMessage() {}
 
 func (x *NumericAggregationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sensor_reading_proto_msgTypes[6]
+	mi := &file_sensor_reading_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -392,7 +528,7 @@ func (x *NumericAggregationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NumericAggregationResponse.ProtoReflect.Descriptor instead.
 func (*NumericAggregationResponse) Descriptor() ([]byte, []int) {
-	return file_sensor_reading_proto_rawDescGZIP(), []int{6}
+	return file_sensor_reading_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *NumericAggregationResponse) GetValue() float64 {
@@ -416,7 +552,23 @@ const file_sensor_reading_proto_rawDesc = "" +
 	"\bpressure\x18\x06 \x01(\x02R\bpressure\x120\n" +
 	"\x13apparentTemperature\x18\a \x01(\x02R\x13apparentTemperature\"!\n" +
 	"\x0fSensorReadingId\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"D\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"O\n" +
+	"\x11PaginationRequest\x12\x1a\n" +
+	"\bpageSize\x18\x01 \x01(\x05R\bpageSize\x12\x1e\n" +
+	"\n" +
+	"pageNumber\x18\x02 \x01(\x05R\n" +
+	"pageNumber\"\xf7\x01\n" +
+	"\x1fPaginationSensorReadingResponse\x12,\n" +
+	"\x05items\x18\x01 \x03(\v2\x16.SensorReadingResponseR\x05items\x12\x1a\n" +
+	"\bpageSize\x18\x02 \x01(\x05R\bpageSize\x12\x1e\n" +
+	"\n" +
+	"pageNumber\x18\x03 \x01(\x05R\n" +
+	"pageNumber\x12(\n" +
+	"\x0fhasPreviousPage\x18\x04 \x01(\bR\x0fhasPreviousPage\x12 \n" +
+	"\vhasNextPage\x18\x05 \x01(\bR\vhasNextPage\x12\x1e\n" +
+	"\n" +
+	"totalItems\x18\x06 \x01(\x05R\n" +
+	"totalItems\"D\n" +
 	"\x1aCreateSensorReadingRequest\x12&\n" +
 	"\x04data\x18\x01 \x01(\v2\x12.SensorReadingDataR\x04data\"T\n" +
 	"\x1aUpdateSensorReadingRequest\x12\x0e\n" +
@@ -429,10 +581,10 @@ const file_sensor_reading_proto_rawDesc = "" +
 	"\x05start\x18\x01 \x01(\x03R\x05start\x12\x10\n" +
 	"\x03end\x18\x02 \x01(\x03R\x03end\"2\n" +
 	"\x1aNumericAggregationResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\x01R\x05value2\xe3\x04\n" +
-	"\x14SensorReadingService\x12>\n" +
+	"\x05value\x18\x01 \x01(\x01R\x05value2\xe7\x04\n" +
+	"\x14SensorReadingService\x12B\n" +
 	"\n" +
-	"GetSensors\x12\x16.google.protobuf.Empty\x1a\x16.SensorReadingResponse0\x01\x129\n" +
+	"GetSensors\x12\x12.PaginationRequest\x1a .PaginationSensorReadingResponse\x129\n" +
 	"\rGetSensorById\x12\x10.SensorReadingId\x1a\x16.SensorReadingResponse\x12C\n" +
 	"\fCreateSensor\x12\x1b.CreateSensorReadingRequest\x1a\x16.SensorReadingResponse\x12C\n" +
 	"\fUpdateSensor\x12\x1b.UpdateSensorReadingRequest\x1a\x16.SensorReadingResponse\x128\n" +
@@ -454,44 +606,47 @@ func file_sensor_reading_proto_rawDescGZIP() []byte {
 	return file_sensor_reading_proto_rawDescData
 }
 
-var file_sensor_reading_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_sensor_reading_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_sensor_reading_proto_goTypes = []any{
-	(*SensorReadingData)(nil),          // 0: SensorReadingData
-	(*SensorReadingId)(nil),            // 1: SensorReadingId
-	(*CreateSensorReadingRequest)(nil), // 2: CreateSensorReadingRequest
-	(*UpdateSensorReadingRequest)(nil), // 3: UpdateSensorReadingRequest
-	(*SensorReadingResponse)(nil),      // 4: SensorReadingResponse
-	(*TimeRangeRequest)(nil),           // 5: TimeRangeRequest
-	(*NumericAggregationResponse)(nil), // 6: NumericAggregationResponse
-	(*emptypb.Empty)(nil),              // 7: google.protobuf.Empty
+	(*SensorReadingData)(nil),               // 0: SensorReadingData
+	(*SensorReadingId)(nil),                 // 1: SensorReadingId
+	(*PaginationRequest)(nil),               // 2: PaginationRequest
+	(*PaginationSensorReadingResponse)(nil), // 3: PaginationSensorReadingResponse
+	(*CreateSensorReadingRequest)(nil),      // 4: CreateSensorReadingRequest
+	(*UpdateSensorReadingRequest)(nil),      // 5: UpdateSensorReadingRequest
+	(*SensorReadingResponse)(nil),           // 6: SensorReadingResponse
+	(*TimeRangeRequest)(nil),                // 7: TimeRangeRequest
+	(*NumericAggregationResponse)(nil),      // 8: NumericAggregationResponse
+	(*emptypb.Empty)(nil),                   // 9: google.protobuf.Empty
 }
 var file_sensor_reading_proto_depIdxs = []int32{
-	0,  // 0: CreateSensorReadingRequest.data:type_name -> SensorReadingData
-	0,  // 1: UpdateSensorReadingRequest.data:type_name -> SensorReadingData
-	0,  // 2: SensorReadingResponse.data:type_name -> SensorReadingData
-	7,  // 3: SensorReadingService.GetSensors:input_type -> google.protobuf.Empty
-	1,  // 4: SensorReadingService.GetSensorById:input_type -> SensorReadingId
-	2,  // 5: SensorReadingService.CreateSensor:input_type -> CreateSensorReadingRequest
-	3,  // 6: SensorReadingService.UpdateSensor:input_type -> UpdateSensorReadingRequest
-	1,  // 7: SensorReadingService.DeleteSensor:input_type -> SensorReadingId
-	5,  // 8: SensorReadingService.GetSensorByMinUsage:input_type -> TimeRangeRequest
-	5,  // 9: SensorReadingService.GetSensorByMaxUsage:input_type -> TimeRangeRequest
-	5,  // 10: SensorReadingService.GetSensorUsageAvg:input_type -> TimeRangeRequest
-	5,  // 11: SensorReadingService.GetSensorUsageSum:input_type -> TimeRangeRequest
-	4,  // 12: SensorReadingService.GetSensors:output_type -> SensorReadingResponse
-	4,  // 13: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
-	4,  // 14: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
-	4,  // 15: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
-	7,  // 16: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
-	4,  // 17: SensorReadingService.GetSensorByMinUsage:output_type -> SensorReadingResponse
-	4,  // 18: SensorReadingService.GetSensorByMaxUsage:output_type -> SensorReadingResponse
-	6,  // 19: SensorReadingService.GetSensorUsageAvg:output_type -> NumericAggregationResponse
-	6,  // 20: SensorReadingService.GetSensorUsageSum:output_type -> NumericAggregationResponse
-	12, // [12:21] is the sub-list for method output_type
-	3,  // [3:12] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	6,  // 0: PaginationSensorReadingResponse.items:type_name -> SensorReadingResponse
+	0,  // 1: CreateSensorReadingRequest.data:type_name -> SensorReadingData
+	0,  // 2: UpdateSensorReadingRequest.data:type_name -> SensorReadingData
+	0,  // 3: SensorReadingResponse.data:type_name -> SensorReadingData
+	2,  // 4: SensorReadingService.GetSensors:input_type -> PaginationRequest
+	1,  // 5: SensorReadingService.GetSensorById:input_type -> SensorReadingId
+	4,  // 6: SensorReadingService.CreateSensor:input_type -> CreateSensorReadingRequest
+	5,  // 7: SensorReadingService.UpdateSensor:input_type -> UpdateSensorReadingRequest
+	1,  // 8: SensorReadingService.DeleteSensor:input_type -> SensorReadingId
+	7,  // 9: SensorReadingService.GetSensorByMinUsage:input_type -> TimeRangeRequest
+	7,  // 10: SensorReadingService.GetSensorByMaxUsage:input_type -> TimeRangeRequest
+	7,  // 11: SensorReadingService.GetSensorUsageAvg:input_type -> TimeRangeRequest
+	7,  // 12: SensorReadingService.GetSensorUsageSum:input_type -> TimeRangeRequest
+	3,  // 13: SensorReadingService.GetSensors:output_type -> PaginationSensorReadingResponse
+	6,  // 14: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
+	6,  // 15: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
+	6,  // 16: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
+	9,  // 17: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
+	6,  // 18: SensorReadingService.GetSensorByMinUsage:output_type -> SensorReadingResponse
+	6,  // 19: SensorReadingService.GetSensorByMaxUsage:output_type -> SensorReadingResponse
+	8,  // 20: SensorReadingService.GetSensorUsageAvg:output_type -> NumericAggregationResponse
+	8,  // 21: SensorReadingService.GetSensorUsageSum:output_type -> NumericAggregationResponse
+	13, // [13:22] is the sub-list for method output_type
+	4,  // [4:13] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_sensor_reading_proto_init() }
@@ -505,7 +660,7 @@ func file_sensor_reading_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sensor_reading_proto_rawDesc), len(file_sensor_reading_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

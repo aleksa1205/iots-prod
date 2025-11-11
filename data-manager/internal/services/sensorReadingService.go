@@ -20,8 +20,25 @@ func NewSensorReadingService(repository *repositories.SensorReadingRepository) *
 	return &SensorReadingService{repository: repository}
 }
 
-func (s *SensorReadingService) GetAllSensors(ctx context.Context) ([]domain.SensorReading, error) {
-	return s.repository.GetAll(ctx)
+func (s *SensorReadingService) GetAllSensors(ctx context.Context, pageSize int32, pageNumber int32) (*domain.PaginatedResponse, error) {
+	items, totalItems, err := s.repository.GetAll(ctx, int(pageSize), int(pageNumber))
+	if err != nil {
+		return nil, fmt.Errorf("SensorReadingService:GetAll: Issue when fetching records\nError: %w", err)
+	}
+
+	fmt.Println(items)
+	fmt.Println(totalItems)
+	fmt.Println(pageSize)
+	fmt.Println(pageNumber)
+
+	return &domain.PaginatedResponse{
+		Items:           items,
+		PageSize:        pageSize,
+		PageNumber:      pageNumber,
+		HasPreviousPage: pageNumber > 1,
+		HasNextPage:     (int64(pageNumber) * int64(pageSize)) < totalItems,
+		TotalItems:      totalItems,
+	}, nil
 }
 
 func (s *SensorReadingService) GetByID(ctx context.Context, id string) (*domain.SensorReading, error) {

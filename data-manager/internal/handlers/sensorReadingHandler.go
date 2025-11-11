@@ -26,20 +26,25 @@ func NewSensorReadingHandler(service *services.SensorReadingService) *SensorRead
 		service:                                 service}
 }
 
-func (h *SensorReadingHandler) GetSensors(req *emptypb.Empty, stream sensorpb.SensorReadingService_GetSensorsServer) error {
-	result, err := h.service.GetAllSensors(stream.Context())
+func (h *SensorReadingHandler) GetSensors(ctx context.Context, pag *sensorpb.PaginationRequest) (*sensorpb.PaginationSensorReadingResponse, error) {
+	result, err := h.service.GetAllSensors(ctx, pag.PageSize, pag.PageNumber)
 	if err != nil {
-		return status.Errorf(codes.Internal, "Failed getting sensors: %v", err)
+		return nil, status.Errorf(codes.Internal, "Failed getting sensors: %v", err)
 	}
 
-	for _, sensor := range result {
-		response := mappers.ToProto(&sensor)
-
-		if err := stream.Send(response); err != nil {
-			return status.Errorf(codes.Internal, "Failed sending response: %v", err)
-		}
+	sensorResults := make([]*sensorpb.SensorReadingResponse, len(result.Items))
+	for i, sensor := range result.Items {
+		sensorResults[i] = mappers.ToProto(&sensor)
 	}
-	return nil
+
+	return &sensorpb.PaginationSensorReadingResponse{
+		Items:           sensorResults,
+		PageSize:        result.PageSize,
+		PageNumber:      result.PageNumber,
+		HasPreviousPage: result.HasPreviousPage,
+		HasNextPage:     result.HasNextPage,
+		TotalItems:      int32(result.TotalItems),
+	}, nil
 }
 
 func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *sensorpb.SensorReadingId) (*sensorpb.SensorReadingResponse, error) {

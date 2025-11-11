@@ -36,7 +36,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SensorReadingServiceClient interface {
 	// CRUD
-	GetSensors(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SensorReadingResponse], error)
+	GetSensors(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*PaginationSensorReadingResponse, error)
 	GetSensorById(ctx context.Context, in *SensorReadingId, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	CreateSensor(ctx context.Context, in *CreateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	UpdateSensor(ctx context.Context, in *UpdateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
@@ -56,24 +56,15 @@ func NewSensorReadingServiceClient(cc grpc.ClientConnInterface) SensorReadingSer
 	return &sensorReadingServiceClient{cc}
 }
 
-func (c *sensorReadingServiceClient) GetSensors(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SensorReadingResponse], error) {
+func (c *sensorReadingServiceClient) GetSensors(ctx context.Context, in *PaginationRequest, opts ...grpc.CallOption) (*PaginationSensorReadingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &SensorReadingService_ServiceDesc.Streams[0], SensorReadingService_GetSensors_FullMethodName, cOpts...)
+	out := new(PaginationSensorReadingResponse)
+	err := c.cc.Invoke(ctx, SensorReadingService_GetSensors_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[emptypb.Empty, SensorReadingResponse]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
+	return out, nil
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type SensorReadingService_GetSensorsClient = grpc.ServerStreamingClient[SensorReadingResponse]
 
 func (c *sensorReadingServiceClient) GetSensorById(ctx context.Context, in *SensorReadingId, opts ...grpc.CallOption) (*SensorReadingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -160,7 +151,7 @@ func (c *sensorReadingServiceClient) GetSensorUsageSum(ctx context.Context, in *
 // for forward compatibility.
 type SensorReadingServiceServer interface {
 	// CRUD
-	GetSensors(*emptypb.Empty, grpc.ServerStreamingServer[SensorReadingResponse]) error
+	GetSensors(context.Context, *PaginationRequest) (*PaginationSensorReadingResponse, error)
 	GetSensorById(context.Context, *SensorReadingId) (*SensorReadingResponse, error)
 	CreateSensor(context.Context, *CreateSensorReadingRequest) (*SensorReadingResponse, error)
 	UpdateSensor(context.Context, *UpdateSensorReadingRequest) (*SensorReadingResponse, error)
@@ -180,8 +171,8 @@ type SensorReadingServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedSensorReadingServiceServer struct{}
 
-func (UnimplementedSensorReadingServiceServer) GetSensors(*emptypb.Empty, grpc.ServerStreamingServer[SensorReadingResponse]) error {
-	return status.Errorf(codes.Unimplemented, "method GetSensors not implemented")
+func (UnimplementedSensorReadingServiceServer) GetSensors(context.Context, *PaginationRequest) (*PaginationSensorReadingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSensors not implemented")
 }
 func (UnimplementedSensorReadingServiceServer) GetSensorById(context.Context, *SensorReadingId) (*SensorReadingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSensorById not implemented")
@@ -228,16 +219,23 @@ func RegisterSensorReadingServiceServer(s grpc.ServiceRegistrar, srv SensorReadi
 	s.RegisterService(&SensorReadingService_ServiceDesc, srv)
 }
 
-func _SensorReadingService_GetSensors_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(emptypb.Empty)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _SensorReadingService_GetSensors_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaginationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(SensorReadingServiceServer).GetSensors(m, &grpc.GenericServerStream[emptypb.Empty, SensorReadingResponse]{ServerStream: stream})
+	if interceptor == nil {
+		return srv.(SensorReadingServiceServer).GetSensors(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SensorReadingService_GetSensors_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SensorReadingServiceServer).GetSensors(ctx, req.(*PaginationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type SensorReadingService_GetSensorsServer = grpc.ServerStreamingServer[SensorReadingResponse]
 
 func _SensorReadingService_GetSensorById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SensorReadingId)
@@ -391,6 +389,10 @@ var SensorReadingService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SensorReadingServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "GetSensors",
+			Handler:    _SensorReadingService_GetSensors_Handler,
+		},
+		{
 			MethodName: "GetSensorById",
 			Handler:    _SensorReadingService_GetSensorById_Handler,
 		},
@@ -423,12 +425,6 @@ var SensorReadingService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SensorReadingService_GetSensorUsageSum_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "GetSensors",
-			Handler:       _SensorReadingService_GetSensors_Handler,
-			ServerStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "sensor_reading.proto",
 }

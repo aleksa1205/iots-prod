@@ -13,6 +13,15 @@ type SensorReading struct {
 	ApparentTemperature float32
 }
 
+type PaginatedResponse struct {
+	Items           []SensorReading
+	PageSize        int32
+	PageNumber      int32
+	HasPreviousPage bool
+	HasNextPage     bool
+	TotalItems      int64
+}
+
 func (domain *SensorReading) Update(request *dtos.SensorReadingRequest) {
 	domain.UsedKW = request.UsedKW
 	domain.GeneratedKW = request.GeneratedKW
