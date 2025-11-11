@@ -306,6 +306,102 @@ func (x *SensorReadingResponse) GetData() *SensorReadingData {
 	return nil
 }
 
+type TimeRangeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Start         int64                  `protobuf:"varint,1,opt,name=start,proto3" json:"start,omitempty"`
+	End           int64                  `protobuf:"varint,2,opt,name=end,proto3" json:"end,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TimeRangeRequest) Reset() {
+	*x = TimeRangeRequest{}
+	mi := &file_sensor_reading_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TimeRangeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TimeRangeRequest) ProtoMessage() {}
+
+func (x *TimeRangeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_sensor_reading_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TimeRangeRequest.ProtoReflect.Descriptor instead.
+func (*TimeRangeRequest) Descriptor() ([]byte, []int) {
+	return file_sensor_reading_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *TimeRangeRequest) GetStart() int64 {
+	if x != nil {
+		return x.Start
+	}
+	return 0
+}
+
+func (x *TimeRangeRequest) GetEnd() int64 {
+	if x != nil {
+		return x.End
+	}
+	return 0
+}
+
+type NumericAggregationResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Value         float64                `protobuf:"fixed64,1,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NumericAggregationResponse) Reset() {
+	*x = NumericAggregationResponse{}
+	mi := &file_sensor_reading_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NumericAggregationResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NumericAggregationResponse) ProtoMessage() {}
+
+func (x *NumericAggregationResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_sensor_reading_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NumericAggregationResponse.ProtoReflect.Descriptor instead.
+func (*NumericAggregationResponse) Descriptor() ([]byte, []int) {
+	return file_sensor_reading_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *NumericAggregationResponse) GetValue() float64 {
+	if x != nil {
+		return x.Value
+	}
+	return 0
+}
+
 var File_sensor_reading_proto protoreflect.FileDescriptor
 
 const file_sensor_reading_proto_rawDesc = "" +
@@ -328,14 +424,23 @@ const file_sensor_reading_proto_rawDesc = "" +
 	"\x04data\x18\x02 \x01(\v2\x12.SensorReadingDataR\x04data\"O\n" +
 	"\x15SensorReadingResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12&\n" +
-	"\x04data\x18\x02 \x01(\v2\x12.SensorReadingDataR\x04data2\xd5\x02\n" +
+	"\x04data\x18\x02 \x01(\v2\x12.SensorReadingDataR\x04data\":\n" +
+	"\x10TimeRangeRequest\x12\x14\n" +
+	"\x05start\x18\x01 \x01(\x03R\x05start\x12\x10\n" +
+	"\x03end\x18\x02 \x01(\x03R\x03end\"2\n" +
+	"\x1aNumericAggregationResponse\x12\x14\n" +
+	"\x05value\x18\x01 \x01(\x01R\x05value2\xe3\x04\n" +
 	"\x14SensorReadingService\x12>\n" +
 	"\n" +
 	"GetSensors\x12\x16.google.protobuf.Empty\x1a\x16.SensorReadingResponse0\x01\x129\n" +
 	"\rGetSensorById\x12\x10.SensorReadingId\x1a\x16.SensorReadingResponse\x12C\n" +
 	"\fCreateSensor\x12\x1b.CreateSensorReadingRequest\x1a\x16.SensorReadingResponse\x12C\n" +
 	"\fUpdateSensor\x12\x1b.UpdateSensorReadingRequest\x1a\x16.SensorReadingResponse\x128\n" +
-	"\fDeleteSensor\x12\x10.SensorReadingId\x1a\x16.google.protobuf.EmptyB&Z$data-manager/internal/proto;sensorpbb\x06proto3"
+	"\fDeleteSensor\x12\x10.SensorReadingId\x1a\x16.google.protobuf.Empty\x12@\n" +
+	"\x13GetSensorByMinUsage\x12\x11.TimeRangeRequest\x1a\x16.SensorReadingResponse\x12@\n" +
+	"\x13GetSensorByMaxUsage\x12\x11.TimeRangeRequest\x1a\x16.SensorReadingResponse\x12C\n" +
+	"\x11GetSensorUsageAvg\x12\x11.TimeRangeRequest\x1a\x1b.NumericAggregationResponse\x12C\n" +
+	"\x11GetSensorUsageSum\x12\x11.TimeRangeRequest\x1a\x1b.NumericAggregationResponseB&Z$data-manager/internal/proto;sensorpbb\x06proto3"
 
 var (
 	file_sensor_reading_proto_rawDescOnce sync.Once
@@ -349,34 +454,44 @@ func file_sensor_reading_proto_rawDescGZIP() []byte {
 	return file_sensor_reading_proto_rawDescData
 }
 
-var file_sensor_reading_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_sensor_reading_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_sensor_reading_proto_goTypes = []any{
 	(*SensorReadingData)(nil),          // 0: SensorReadingData
 	(*SensorReadingId)(nil),            // 1: SensorReadingId
 	(*CreateSensorReadingRequest)(nil), // 2: CreateSensorReadingRequest
 	(*UpdateSensorReadingRequest)(nil), // 3: UpdateSensorReadingRequest
 	(*SensorReadingResponse)(nil),      // 4: SensorReadingResponse
-	(*emptypb.Empty)(nil),              // 5: google.protobuf.Empty
+	(*TimeRangeRequest)(nil),           // 5: TimeRangeRequest
+	(*NumericAggregationResponse)(nil), // 6: NumericAggregationResponse
+	(*emptypb.Empty)(nil),              // 7: google.protobuf.Empty
 }
 var file_sensor_reading_proto_depIdxs = []int32{
-	0, // 0: CreateSensorReadingRequest.data:type_name -> SensorReadingData
-	0, // 1: UpdateSensorReadingRequest.data:type_name -> SensorReadingData
-	0, // 2: SensorReadingResponse.data:type_name -> SensorReadingData
-	5, // 3: SensorReadingService.GetSensors:input_type -> google.protobuf.Empty
-	1, // 4: SensorReadingService.GetSensorById:input_type -> SensorReadingId
-	2, // 5: SensorReadingService.CreateSensor:input_type -> CreateSensorReadingRequest
-	3, // 6: SensorReadingService.UpdateSensor:input_type -> UpdateSensorReadingRequest
-	1, // 7: SensorReadingService.DeleteSensor:input_type -> SensorReadingId
-	4, // 8: SensorReadingService.GetSensors:output_type -> SensorReadingResponse
-	4, // 9: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
-	4, // 10: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
-	4, // 11: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
-	5, // 12: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
-	8, // [8:13] is the sub-list for method output_type
-	3, // [3:8] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0,  // 0: CreateSensorReadingRequest.data:type_name -> SensorReadingData
+	0,  // 1: UpdateSensorReadingRequest.data:type_name -> SensorReadingData
+	0,  // 2: SensorReadingResponse.data:type_name -> SensorReadingData
+	7,  // 3: SensorReadingService.GetSensors:input_type -> google.protobuf.Empty
+	1,  // 4: SensorReadingService.GetSensorById:input_type -> SensorReadingId
+	2,  // 5: SensorReadingService.CreateSensor:input_type -> CreateSensorReadingRequest
+	3,  // 6: SensorReadingService.UpdateSensor:input_type -> UpdateSensorReadingRequest
+	1,  // 7: SensorReadingService.DeleteSensor:input_type -> SensorReadingId
+	5,  // 8: SensorReadingService.GetSensorByMinUsage:input_type -> TimeRangeRequest
+	5,  // 9: SensorReadingService.GetSensorByMaxUsage:input_type -> TimeRangeRequest
+	5,  // 10: SensorReadingService.GetSensorUsageAvg:input_type -> TimeRangeRequest
+	5,  // 11: SensorReadingService.GetSensorUsageSum:input_type -> TimeRangeRequest
+	4,  // 12: SensorReadingService.GetSensors:output_type -> SensorReadingResponse
+	4,  // 13: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
+	4,  // 14: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
+	4,  // 15: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
+	7,  // 16: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
+	4,  // 17: SensorReadingService.GetSensorByMinUsage:output_type -> SensorReadingResponse
+	4,  // 18: SensorReadingService.GetSensorByMaxUsage:output_type -> SensorReadingResponse
+	6,  // 19: SensorReadingService.GetSensorUsageAvg:output_type -> NumericAggregationResponse
+	6,  // 20: SensorReadingService.GetSensorUsageSum:output_type -> NumericAggregationResponse
+	12, // [12:21] is the sub-list for method output_type
+	3,  // [3:12] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_sensor_reading_proto_init() }
@@ -390,7 +505,7 @@ func file_sensor_reading_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sensor_reading_proto_rawDesc), len(file_sensor_reading_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

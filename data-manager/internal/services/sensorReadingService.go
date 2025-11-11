@@ -30,6 +30,46 @@ func (s *SensorReadingService) GetByID(ctx context.Context, id string) (*domain.
 	return sensor, nil
 }
 
+func (s *SensorReadingService) GetMin(ctx context.Context, start int64, end int64) (*domain.SensorReading, error) {
+	sensor, err := s.repository.GetMin(ctx, start, end)
+
+	if err != nil {
+		return nil, fmt.Errorf("SensorReadingService/GetMin: Sensor with start %d and end %d not found", start, end)
+	}
+
+	return sensor, nil
+}
+
+func (s *SensorReadingService) GetMax(ctx context.Context, start int64, end int64) (*domain.SensorReading, error) {
+	sensor, err := s.repository.GetMax(ctx, start, end)
+
+	if err != nil {
+		return nil, fmt.Errorf("SensorReadingService/GetMax: Sensor with start %d and end %d not found", start, end)
+	}
+
+	return sensor, nil
+}
+
+func (s *SensorReadingService) GetSum(ctx context.Context, start int64, end int64) (float64, error) {
+	value, err := s.repository.GetSum(ctx, start, end)
+
+	if err != nil {
+		return 0.0, fmt.Errorf("SensorReadingService/GetSum: Sensor with start %d and end %d not found", start, end)
+	}
+
+	return value, nil
+}
+
+func (s *SensorReadingService) GetAvg(ctx context.Context, start int64, end int64) (float64, error) {
+	value, err := s.repository.GetAvg(ctx, start, end)
+
+	if err != nil {
+		return 0.0, fmt.Errorf("SensorReadingService/GetAvg: Sensor with start %d and end %d not found", start, end)
+	}
+
+	return value, nil
+}
+
 func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorReadingRequest) (*domain.SensorReading, error) {
 	sensor := dtos.ToDomain(request)
 	err := s.repository.Create(ctx, sensor)

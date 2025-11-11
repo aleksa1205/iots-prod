@@ -51,6 +51,48 @@ func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *senso
 	return response, nil
 }
 
+func (h *SensorReadingHandler) GetSensorByMinUsage(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.SensorReadingResponse, error) {
+	sensor, err := h.service.GetMin(ctx, request.Start, request.End)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+	}
+
+	response := dtos.ToProto(sensor)
+
+	return response, nil
+}
+
+func (h *SensorReadingHandler) GetSensorByMaxUsage(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.SensorReadingResponse, error) {
+	sensor, err := h.service.GetMax(ctx, request.Start, request.End)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+	}
+
+	response := dtos.ToProto(sensor)
+
+	return response, nil
+}
+
+func (h *SensorReadingHandler) GetSensorUsageAvg(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.NumericAggregationResponse, error) {
+	value, err := h.service.GetAvg(ctx, request.Start, request.End)
+
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+	}
+
+	return &sensorpb.NumericAggregationResponse{Value: value}, nil
+}
+
+func (h *SensorReadingHandler) GetSensorUsageSum(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.NumericAggregationResponse, error) {
+	value, err := h.service.GetSum(ctx, request.Start, request.End)
+
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+	}
+
+	return &sensorpb.NumericAggregationResponse{Value: value}, nil
+}
+
 func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensorpb.CreateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
 	sensor, err := h.service.Create(ctx, dtos.ToRequest(request))
 

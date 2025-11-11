@@ -20,22 +20,32 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SensorReadingService_GetSensors_FullMethodName    = "/SensorReadingService/GetSensors"
-	SensorReadingService_GetSensorById_FullMethodName = "/SensorReadingService/GetSensorById"
-	SensorReadingService_CreateSensor_FullMethodName  = "/SensorReadingService/CreateSensor"
-	SensorReadingService_UpdateSensor_FullMethodName  = "/SensorReadingService/UpdateSensor"
-	SensorReadingService_DeleteSensor_FullMethodName  = "/SensorReadingService/DeleteSensor"
+	SensorReadingService_GetSensors_FullMethodName          = "/SensorReadingService/GetSensors"
+	SensorReadingService_GetSensorById_FullMethodName       = "/SensorReadingService/GetSensorById"
+	SensorReadingService_CreateSensor_FullMethodName        = "/SensorReadingService/CreateSensor"
+	SensorReadingService_UpdateSensor_FullMethodName        = "/SensorReadingService/UpdateSensor"
+	SensorReadingService_DeleteSensor_FullMethodName        = "/SensorReadingService/DeleteSensor"
+	SensorReadingService_GetSensorByMinUsage_FullMethodName = "/SensorReadingService/GetSensorByMinUsage"
+	SensorReadingService_GetSensorByMaxUsage_FullMethodName = "/SensorReadingService/GetSensorByMaxUsage"
+	SensorReadingService_GetSensorUsageAvg_FullMethodName   = "/SensorReadingService/GetSensorUsageAvg"
+	SensorReadingService_GetSensorUsageSum_FullMethodName   = "/SensorReadingService/GetSensorUsageSum"
 )
 
 // SensorReadingServiceClient is the client API for SensorReadingService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SensorReadingServiceClient interface {
+	// CRUD
 	GetSensors(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SensorReadingResponse], error)
 	GetSensorById(ctx context.Context, in *SensorReadingId, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	CreateSensor(ctx context.Context, in *CreateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	UpdateSensor(ctx context.Context, in *UpdateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	DeleteSensor(ctx context.Context, in *SensorReadingId, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Aggregation
+	GetSensorByMinUsage(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
+	GetSensorByMaxUsage(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
+	GetSensorUsageAvg(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*NumericAggregationResponse, error)
+	GetSensorUsageSum(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*NumericAggregationResponse, error)
 }
 
 type sensorReadingServiceClient struct {
@@ -105,15 +115,61 @@ func (c *sensorReadingServiceClient) DeleteSensor(ctx context.Context, in *Senso
 	return out, nil
 }
 
+func (c *sensorReadingServiceClient) GetSensorByMinUsage(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SensorReadingResponse)
+	err := c.cc.Invoke(ctx, SensorReadingService_GetSensorByMinUsage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sensorReadingServiceClient) GetSensorByMaxUsage(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SensorReadingResponse)
+	err := c.cc.Invoke(ctx, SensorReadingService_GetSensorByMaxUsage_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sensorReadingServiceClient) GetSensorUsageAvg(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*NumericAggregationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NumericAggregationResponse)
+	err := c.cc.Invoke(ctx, SensorReadingService_GetSensorUsageAvg_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sensorReadingServiceClient) GetSensorUsageSum(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*NumericAggregationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NumericAggregationResponse)
+	err := c.cc.Invoke(ctx, SensorReadingService_GetSensorUsageSum_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SensorReadingServiceServer is the server API for SensorReadingService service.
 // All implementations must embed UnimplementedSensorReadingServiceServer
 // for forward compatibility.
 type SensorReadingServiceServer interface {
+	// CRUD
 	GetSensors(*emptypb.Empty, grpc.ServerStreamingServer[SensorReadingResponse]) error
 	GetSensorById(context.Context, *SensorReadingId) (*SensorReadingResponse, error)
 	CreateSensor(context.Context, *CreateSensorReadingRequest) (*SensorReadingResponse, error)
 	UpdateSensor(context.Context, *UpdateSensorReadingRequest) (*SensorReadingResponse, error)
 	DeleteSensor(context.Context, *SensorReadingId) (*emptypb.Empty, error)
+	// Aggregation
+	GetSensorByMinUsage(context.Context, *TimeRangeRequest) (*SensorReadingResponse, error)
+	GetSensorByMaxUsage(context.Context, *TimeRangeRequest) (*SensorReadingResponse, error)
+	GetSensorUsageAvg(context.Context, *TimeRangeRequest) (*NumericAggregationResponse, error)
+	GetSensorUsageSum(context.Context, *TimeRangeRequest) (*NumericAggregationResponse, error)
 	mustEmbedUnimplementedSensorReadingServiceServer()
 }
 
@@ -138,6 +194,18 @@ func (UnimplementedSensorReadingServiceServer) UpdateSensor(context.Context, *Up
 }
 func (UnimplementedSensorReadingServiceServer) DeleteSensor(context.Context, *SensorReadingId) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSensor not implemented")
+}
+func (UnimplementedSensorReadingServiceServer) GetSensorByMinUsage(context.Context, *TimeRangeRequest) (*SensorReadingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSensorByMinUsage not implemented")
+}
+func (UnimplementedSensorReadingServiceServer) GetSensorByMaxUsage(context.Context, *TimeRangeRequest) (*SensorReadingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSensorByMaxUsage not implemented")
+}
+func (UnimplementedSensorReadingServiceServer) GetSensorUsageAvg(context.Context, *TimeRangeRequest) (*NumericAggregationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSensorUsageAvg not implemented")
+}
+func (UnimplementedSensorReadingServiceServer) GetSensorUsageSum(context.Context, *TimeRangeRequest) (*NumericAggregationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSensorUsageSum not implemented")
 }
 func (UnimplementedSensorReadingServiceServer) mustEmbedUnimplementedSensorReadingServiceServer() {}
 func (UnimplementedSensorReadingServiceServer) testEmbeddedByValue()                              {}
@@ -243,6 +311,78 @@ func _SensorReadingService_DeleteSensor_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SensorReadingService_GetSensorByMinUsage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TimeRangeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SensorReadingServiceServer).GetSensorByMinUsage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SensorReadingService_GetSensorByMinUsage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SensorReadingServiceServer).GetSensorByMinUsage(ctx, req.(*TimeRangeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SensorReadingService_GetSensorByMaxUsage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TimeRangeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SensorReadingServiceServer).GetSensorByMaxUsage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SensorReadingService_GetSensorByMaxUsage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SensorReadingServiceServer).GetSensorByMaxUsage(ctx, req.(*TimeRangeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SensorReadingService_GetSensorUsageAvg_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TimeRangeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SensorReadingServiceServer).GetSensorUsageAvg(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SensorReadingService_GetSensorUsageAvg_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SensorReadingServiceServer).GetSensorUsageAvg(ctx, req.(*TimeRangeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SensorReadingService_GetSensorUsageSum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TimeRangeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SensorReadingServiceServer).GetSensorUsageSum(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SensorReadingService_GetSensorUsageSum_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SensorReadingServiceServer).GetSensorUsageSum(ctx, req.(*TimeRangeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SensorReadingService_ServiceDesc is the grpc.ServiceDesc for SensorReadingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -265,6 +405,22 @@ var SensorReadingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteSensor",
 			Handler:    _SensorReadingService_DeleteSensor_Handler,
+		},
+		{
+			MethodName: "GetSensorByMinUsage",
+			Handler:    _SensorReadingService_GetSensorByMinUsage_Handler,
+		},
+		{
+			MethodName: "GetSensorByMaxUsage",
+			Handler:    _SensorReadingService_GetSensorByMaxUsage_Handler,
+		},
+		{
+			MethodName: "GetSensorUsageAvg",
+			Handler:    _SensorReadingService_GetSensorUsageAvg_Handler,
+		},
+		{
+			MethodName: "GetSensorUsageSum",
+			Handler:    _SensorReadingService_GetSensorUsageSum_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

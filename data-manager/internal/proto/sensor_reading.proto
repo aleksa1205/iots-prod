@@ -32,10 +32,26 @@ message SensorReadingResponse {
   SensorReadingData data = 2;
 }
 
+message TimeRangeRequest {
+  int64 start = 1;
+  int64 end = 2;
+}
+
+message NumericAggregationResponse {
+  double value = 1;
+}
+
 service SensorReadingService{
+  // CRUD
   rpc GetSensors(google.protobuf.Empty) returns (stream SensorReadingResponse);
   rpc GetSensorById(SensorReadingId) returns (SensorReadingResponse);
   rpc CreateSensor(CreateSensorReadingRequest) returns (SensorReadingResponse);
   rpc UpdateSensor(UpdateSensorReadingRequest) returns (SensorReadingResponse);
   rpc DeleteSensor(SensorReadingId) returns (google.protobuf.Empty);
+
+  // Aggregation
+  rpc GetSensorByMinUsage(TimeRangeRequest) returns(SensorReadingResponse);
+  rpc GetSensorByMaxUsage(TimeRangeRequest) returns(SensorReadingResponse);
+  rpc GetSensorUsageAvg(TimeRangeRequest) returns(NumericAggregationResponse);
+  rpc GetSensorUsageSum(TimeRangeRequest) returns(NumericAggregationResponse);
 }

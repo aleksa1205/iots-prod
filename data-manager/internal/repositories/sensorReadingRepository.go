@@ -29,6 +29,34 @@ func (repository *SensorReadingRepository) GetByID(ctx context.Context, id strin
 	return &sensorReading, result.Error
 }
 
+func (repository *SensorReadingRepository) GetMin(ctx context.Context, start int64, end int64) (*entities.SensorReading, error) {
+	var sensorReading entities.SensorReading
+	err := repository.db.WithContext(ctx).Where("time >= ? AND time <= ?", start, end).Order("used_kw ASC").First(&sensorReading).Error
+
+	return &sensorReading, err
+}
+
+func (repository *SensorReadingRepository) GetMax(ctx context.Context, start int64, end int64) (*entities.SensorReading, error) {
+	var sensorReading entities.SensorReading
+	err := repository.db.WithContext(ctx).Where("time >= ? AND time <= ?", start, end).Order("used_kw DESC").First(&sensorReading).Error
+
+	return &sensorReading, err
+}
+
+func (repository *SensorReadingRepository) GetSum(ctx context.Context, start int64, end int64) (float64, error) {
+	var sum float64
+	err := repository.db.WithContext(ctx).Model(&entities.SensorReading{}).Select("sum(used_kw)").Scan(&sum).Error
+
+	return sum, err
+}
+
+func (repository *SensorReadingRepository) GetAvg(ctx context.Context, start int64, end int64) (float64, error) {
+	var avg float64
+	err := repository.db.WithContext(ctx).Model(&entities.SensorReading{}).Select("avg(used_kw)").Scan(&avg).Error
+
+	return avg, err
+}
+
 func (repository *SensorReadingRepository) Create(ctx context.Context, domain *entities.SensorReading) error {
 	return repository.db.WithContext(ctx).Create(&domain).Error
 }
