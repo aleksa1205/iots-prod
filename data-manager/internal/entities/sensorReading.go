@@ -1,6 +1,6 @@
 package entities
 
-import sensorpb "data-manager/internal/proto"
+import "data-manager/internal/services/dtos"
 
 type SensorReading struct {
 	ID                  string
@@ -13,17 +13,11 @@ type SensorReading struct {
 	ApparentTemperature float32
 }
 
-func ToProto(domain *SensorReading) *sensorpb.SensorReadingResponse {
-	return &sensorpb.SensorReadingResponse{
-		Id: domain.ID,
-		Data: &sensorpb.SensorReadingData{
-			UsedKw:              domain.UsedKW,
-			GeneratedKw:         domain.GeneratedKW,
-			Temperature:         domain.Temperature,
-			ApparentTemperature: domain.ApparentTemperature,
-			Pressure:            domain.Pressure,
-			Humidity:            domain.Humidity,
-			Time:                domain.Time,
-		},
-	}
+func (domain *SensorReading) Update(request *dtos.SensorReadingRequest) {
+	domain.UsedKW = request.UsedKW
+	domain.GeneratedKW = request.GeneratedKW
+	domain.Temperature = request.Temperature
+	domain.ApparentTemperature = request.ApparentTemperature
+	domain.Humidity = request.Humidity
+	domain.Pressure = request.Pressure
 }

@@ -1,13 +1,14 @@
-package dtos
+package mappers
 
 import (
 	"data-manager/internal/entities"
 	sensorpb "data-manager/internal/proto"
+	"data-manager/internal/services/dtos"
 
 	"github.com/google/uuid"
 )
 
-func ToDomain(request *SensorReadingRequest) *entities.SensorReading {
+func ToDomain(request *dtos.SensorReadingRequest) *entities.SensorReading {
 	return &entities.SensorReading{
 		ID:                  uuid.New().String(),
 		UsedKW:              request.UsedKW,
@@ -20,8 +21,8 @@ func ToDomain(request *SensorReadingRequest) *entities.SensorReading {
 	}
 }
 
-func ToRequest(request *sensorpb.CreateSensorReadingRequest) *SensorReadingRequest {
-	return &SensorReadingRequest{
+func ToRequest(request *sensorpb.CreateSensorReadingRequest) *dtos.SensorReadingRequest {
+	return &dtos.SensorReadingRequest{
 		UsedKW:              request.Data.UsedKw,
 		GeneratedKW:         request.Data.GeneratedKw,
 		Temperature:         request.Data.Temperature,
@@ -32,8 +33,8 @@ func ToRequest(request *sensorpb.CreateSensorReadingRequest) *SensorReadingReque
 	}
 }
 
-func ToUpdateRequest(request *sensorpb.UpdateSensorReadingRequest) *SensorReadingRequest {
-	return &SensorReadingRequest{
+func ToUpdateRequest(request *sensorpb.UpdateSensorReadingRequest) *dtos.SensorReadingRequest {
+	return &dtos.SensorReadingRequest{
 		UsedKW:              request.Data.UsedKw,
 		GeneratedKW:         request.Data.GeneratedKw,
 		Temperature:         request.Data.Temperature,
@@ -41,5 +42,20 @@ func ToUpdateRequest(request *sensorpb.UpdateSensorReadingRequest) *SensorReadin
 		Pressure:            request.Data.Pressure,
 		Humidity:            request.Data.Humidity,
 		Time:                request.Data.Time,
+	}
+}
+
+func ToProto(domain *entities.SensorReading) *sensorpb.SensorReadingResponse {
+	return &sensorpb.SensorReadingResponse{
+		Id: domain.ID,
+		Data: &sensorpb.SensorReadingData{
+			UsedKw:              domain.UsedKW,
+			GeneratedKw:         domain.GeneratedKW,
+			Temperature:         domain.Temperature,
+			ApparentTemperature: domain.ApparentTemperature,
+			Pressure:            domain.Pressure,
+			Humidity:            domain.Humidity,
+			Time:                domain.Time,
+		},
 	}
 }

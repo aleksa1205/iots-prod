@@ -3,9 +3,13 @@ package services
 import (
 	"context"
 	domain "data-manager/internal/entities"
+	"data-manager/internal/mappers"
 	"data-manager/internal/repositories"
 	"data-manager/internal/services/dtos"
+	"errors"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type SensorReadingService struct {
@@ -24,7 +28,10 @@ func (s *SensorReadingService) GetByID(ctx context.Context, id string) (*domain.
 	sensor, err := s.repository.GetByID(ctx, id)
 
 	if err != nil {
-		return nil, fmt.Errorf("SensorReadingService/GetById: Sensor with id %s not found", id)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("SensorReadingService/GetById: Sensor with id %s not found", id)
+		}
+		return nil, fmt.Errorf("SensorReadingService/GetById: Issue when fetching a record with %s id\nError: %v", id, err)
 	}
 
 	return sensor, nil
@@ -71,7 +78,7 @@ func (s *SensorReadingService) GetAvg(ctx context.Context, start int64, end int6
 }
 
 func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorReadingRequest) (*domain.SensorReading, error) {
-	sensor := dtos.ToDomain(request)
+	sensor := mappers.ToDomain(request)
 	err := s.repository.Create(ctx, sensor)
 
 	if err != nil {
@@ -84,16 +91,13 @@ func (s *SensorReadingService) Update(ctx context.Context, id string, request *d
 	sensor, err := s.repository.GetByID(ctx, id)
 
 	if err != nil {
-		return nil, fmt.Errorf("SensorReadingService/Update: Sensor with id %s not found", id)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("SensorReadingService/Update: Sensor with id %s not found", id)
+		}
+		return nil, fmt.Errorf("SensorReadingService/Update: Issue when updating a record with %s id\nError: %v", id, err)
 	}
 
-	sensor.GeneratedKW = request.GeneratedKW
-	sensor.UsedKW = request.UsedKW
-	sensor.Temperature = request.Temperature
-	sensor.Humidity = request.Humidity
-	sensor.ApparentTemperature = request.ApparentTemperature
-	sensor.Pressure = request.Pressure
-
+	sensor.Update(request)
 	err = s.repository.Update(ctx, sensor)
 
 	if err != nil {
@@ -107,7 +111,10 @@ func (s *SensorReadingService) Delete(ctx context.Context, id string) error {
 	sensor, err := s.repository.GetByID(ctx, id)
 
 	if err != nil {
-		return fmt.Errorf("SensorReadingService/Delete: Sensor with id %s not found", id)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("SensorReadingService/Delete: Sensor with id %s not found", id)
+		}
+		return fmt.Errorf("SensorReadingService/Delete: Issue when deleting a record with %s id\nError: %w", id, err)
 	}
 
 	return s.repository.Delete(ctx, sensor)

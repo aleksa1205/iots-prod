@@ -2,14 +2,15 @@ package handlers
 
 import (
 	"context"
-	"data-manager/internal/entities"
+	"data-manager/internal/mappers"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/services"
-	"data-manager/internal/services/dtos"
+	"errors"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"gorm.io/gorm"
 )
 
 type SensorReadingHandler struct {
@@ -32,7 +33,7 @@ func (h *SensorReadingHandler) GetSensors(req *emptypb.Empty, stream sensorpb.Se
 	}
 
 	for _, sensor := range result {
-		response := entities.ToProto(&sensor)
+		response := mappers.ToProto(&sensor)
 
 		if err := stream.Send(response); err != nil {
 			return status.Errorf(codes.Internal, "Failed sending response: %v", err)
@@ -43,42 +44,77 @@ func (h *SensorReadingHandler) GetSensors(req *emptypb.Empty, stream sensorpb.Se
 
 func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *sensorpb.SensorReadingId) (*sensorpb.SensorReadingResponse, error) {
 	sensor, err := h.service.GetByID(ctx, request.Id)
+
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Sensor %v does not exist", request.Id)
+		}
 		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
 	}
 
-	response := entities.ToProto(sensor)
+	return mappers.ToProto(sensor), nil
+}
 
-	return response, nil
+func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensorpb.CreateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
+	sensor, err := h.service.Create(ctx, mappers.ToRequest(request))
+
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "Failed creating sensor:\n%v", err)
+	}
+
+	return mappers.ToProto(sensor), nil
+}
+
+func (h *SensorReadingHandler) UpdateSensor(ctx context.Context, request *sensorpb.UpdateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
+	sensor, err := h.service.Update(ctx, request.Id, mappers.ToUpdateRequest(request))
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Sensor %v does not exist", request.Id)
+		}
+		return nil, status.Errorf(codes.Internal, "Failed updating sensor:\n%v", err)
+	}
+
+	return mappers.ToProto(sensor), nil
+}
+
+func (h *SensorReadingHandler) DeleteSensor(ctx context.Context, request *sensorpb.SensorReadingId) (*emptypb.Empty, error) {
+	err := h.service.Delete(ctx, request.Id)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.NotFound, "Sensor %v does not exist", request.Id)
+		}
+		return nil, status.Errorf(codes.Internal, "Failed deleting sensor:\n%v", err)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 func (h *SensorReadingHandler) GetSensorByMinUsage(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.SensorReadingResponse, error) {
 	sensor, err := h.service.GetMin(ctx, request.Start, request.End)
+
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+		return nil, status.Errorf(codes.Internal, "Failed getting min sensor:\n%v", err)
 	}
 
-	response := entities.ToProto(sensor)
-
-	return response, nil
+	return mappers.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) GetSensorByMaxUsage(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.SensorReadingResponse, error) {
 	sensor, err := h.service.GetMax(ctx, request.Start, request.End)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+		return nil, status.Errorf(codes.Internal, "Failed getting max sensor:\n%v", err)
 	}
 
-	response := entities.ToProto(sensor)
-
-	return response, nil
+	return mappers.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) GetSensorUsageAvg(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.NumericAggregationResponse, error) {
 	value, err := h.service.GetAvg(ctx, request.Start, request.End)
 
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+		return nil, status.Errorf(codes.Internal, "Failed getting avg usage of sensors:\n%v", err)
 	}
 
 	return &sensorpb.NumericAggregationResponse{Value: value}, nil
@@ -88,39 +124,8 @@ func (h *SensorReadingHandler) GetSensorUsageSum(ctx context.Context, request *s
 	value, err := h.service.GetSum(ctx, request.Start, request.End)
 
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+		return nil, status.Errorf(codes.Internal, "Failed getting sum usage of sensors:\n%v", err)
 	}
 
 	return &sensorpb.NumericAggregationResponse{Value: value}, nil
-}
-
-func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensorpb.CreateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
-	sensor, err := h.service.Create(ctx, dtos.ToRequest(request))
-
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed creating sensor:\n%v", err)
-	}
-
-	response := entities.ToProto(sensor)
-	return response, nil
-}
-
-func (h *SensorReadingHandler) UpdateSensor(ctx context.Context, request *sensorpb.UpdateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
-	sensor, err := h.service.Update(ctx, request.Id, dtos.ToUpdateRequest(request))
-
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed updating sensor:\n%v", err)
-	}
-	response := entities.ToProto(sensor)
-	return response, nil
-}
-
-func (h *SensorReadingHandler) DeleteSensor(ctx context.Context, request *sensorpb.SensorReadingId) (*emptypb.Empty, error) {
-	err := h.service.Delete(ctx, request.Id)
-
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed deleting sensor:\n%v", err)
-	}
-
-	return &emptypb.Empty{}, nil
 }
