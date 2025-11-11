@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"data-manager/internal/mappers"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/services"
 	"errors"
@@ -34,7 +33,7 @@ func (h *SensorReadingHandler) GetSensors(ctx context.Context, pag *sensorpb.Pag
 
 	sensorResults := make([]*sensorpb.SensorReadingResponse, len(result.Items))
 	for i, sensor := range result.Items {
-		sensorResults[i] = mappers.ToProto(&sensor)
+		sensorResults[i] = sensorpb.ToProto(&sensor)
 	}
 
 	return &sensorpb.PaginationSensorReadingResponse{
@@ -57,21 +56,21 @@ func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *senso
 		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
 	}
 
-	return mappers.ToProto(sensor), nil
+	return sensorpb.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensorpb.CreateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
-	sensor, err := h.service.Create(ctx, mappers.ToRequest(request))
+	sensor, err := h.service.Create(ctx, request.ToRequest())
 
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Failed creating sensor:\n%v", err)
 	}
 
-	return mappers.ToProto(sensor), nil
+	return sensorpb.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) UpdateSensor(ctx context.Context, request *sensorpb.UpdateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
-	sensor, err := h.service.Update(ctx, request.Id, mappers.ToUpdateRequest(request))
+	sensor, err := h.service.Update(ctx, request.Id, request.ToUpdateRequest())
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -80,7 +79,7 @@ func (h *SensorReadingHandler) UpdateSensor(ctx context.Context, request *sensor
 		return nil, status.Errorf(codes.Internal, "Failed updating sensor:\n%v", err)
 	}
 
-	return mappers.ToProto(sensor), nil
+	return sensorpb.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) DeleteSensor(ctx context.Context, request *sensorpb.SensorReadingId) (*emptypb.Empty, error) {
@@ -103,7 +102,7 @@ func (h *SensorReadingHandler) GetSensorByMinUsage(ctx context.Context, request 
 		return nil, status.Errorf(codes.Internal, "Failed getting min sensor:\n%v", err)
 	}
 
-	return mappers.ToProto(sensor), nil
+	return sensorpb.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) GetSensorByMaxUsage(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.SensorReadingResponse, error) {
@@ -112,7 +111,7 @@ func (h *SensorReadingHandler) GetSensorByMaxUsage(ctx context.Context, request 
 		return nil, status.Errorf(codes.Internal, "Failed getting max sensor:\n%v", err)
 	}
 
-	return mappers.ToProto(sensor), nil
+	return sensorpb.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) GetSensorUsageAvg(ctx context.Context, request *sensorpb.TimeRangeRequest) (*sensorpb.NumericAggregationResponse, error) {

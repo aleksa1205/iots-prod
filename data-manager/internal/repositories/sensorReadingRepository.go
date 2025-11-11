@@ -3,7 +3,6 @@ package repositories
 import (
 	"context"
 	"data-manager/internal/entities"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -36,11 +35,7 @@ func (r *SensorReadingRepository) GetAll(ctx context.Context, pageSize int, page
 		Limit(pageSize).
 		Offset(offset).
 		Find(&readings).Error
-	fmt.Println(readings)
-	fmt.Println(totalItems)
-	fmt.Println(offset)
-	fmt.Println(pageSize)
-	fmt.Println(pageNumber)
+
 	return readings, totalItems, err
 }
 

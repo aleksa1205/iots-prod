@@ -1,7 +1,5 @@
 package entities
 
-import "data-manager/internal/services/dtos"
-
 type SensorReading struct {
 	ID                  string
 	UsedKW              float64
@@ -13,7 +11,7 @@ type SensorReading struct {
 	ApparentTemperature float32
 }
 
-type PaginatedResponse struct {
+type PaginatedSensorReading struct {
 	Items           []SensorReading
 	PageSize        int32
 	PageNumber      int32
@@ -22,11 +20,12 @@ type PaginatedResponse struct {
 	TotalItems      int64
 }
 
-func (domain *SensorReading) Update(request *dtos.SensorReadingRequest) {
-	domain.UsedKW = request.UsedKW
-	domain.GeneratedKW = request.GeneratedKW
-	domain.Temperature = request.Temperature
-	domain.ApparentTemperature = request.ApparentTemperature
-	domain.Humidity = request.Humidity
-	domain.Pressure = request.Pressure
+func (d *SensorReading) UpdateFromEntity(other *SensorReading) {
+	d.UsedKW = other.UsedKW
+	d.GeneratedKW = other.GeneratedKW
+	d.Temperature = other.Temperature
+	d.ApparentTemperature = other.ApparentTemperature
+	d.Humidity = other.Humidity
+	d.Pressure = other.Pressure
+	d.Time = other.Time
 }

@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	domain "data-manager/internal/entities"
-	"data-manager/internal/mappers"
 	"data-manager/internal/repositories"
 	"data-manager/internal/services/dtos"
 	"errors"
@@ -20,18 +19,13 @@ func NewSensorReadingService(repository *repositories.SensorReadingRepository) *
 	return &SensorReadingService{repository: repository}
 }
 
-func (s *SensorReadingService) GetAllSensors(ctx context.Context, pageSize int32, pageNumber int32) (*domain.PaginatedResponse, error) {
+func (s *SensorReadingService) GetAllSensors(ctx context.Context, pageSize int32, pageNumber int32) (*domain.PaginatedSensorReading, error) {
 	items, totalItems, err := s.repository.GetAll(ctx, int(pageSize), int(pageNumber))
 	if err != nil {
 		return nil, fmt.Errorf("SensorReadingService:GetAll: Issue when fetching records\nError: %w", err)
 	}
 
-	fmt.Println(items)
-	fmt.Println(totalItems)
-	fmt.Println(pageSize)
-	fmt.Println(pageNumber)
-
-	return &domain.PaginatedResponse{
+	return &domain.PaginatedSensorReading{
 		Items:           items,
 		PageSize:        pageSize,
 		PageNumber:      pageNumber,
@@ -95,7 +89,7 @@ func (s *SensorReadingService) GetAvg(ctx context.Context, start int64, end int6
 }
 
 func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorReadingRequest) (*domain.SensorReading, error) {
-	sensor := mappers.ToDomain(request)
+	sensor := request.ToDomain()
 	err := s.repository.Create(ctx, sensor)
 
 	if err != nil {
@@ -114,7 +108,7 @@ func (s *SensorReadingService) Update(ctx context.Context, id string, request *d
 		return nil, fmt.Errorf("SensorReadingService/Update: Issue when updating a record with %s id\nError: %v", id, err)
 	}
 
-	sensor.Update(request)
+	request.UpdateDomain(sensor)
 	err = s.repository.Update(ctx, sensor)
 
 	if err != nil {
