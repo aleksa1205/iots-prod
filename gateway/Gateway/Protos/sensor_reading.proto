@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+message SensorReadingData {
+  double usedKw = 1;
+  double generatedKw = 2;
+  int64 time = 3;
+  float temperature = 4;
+  float humidity = 5;
+  float pressure = 6;
+  float apparentTemperature = 7;
+}
+
+message SensorReadingId{
+  string id = 1;
+}
+
+message PaginationRequest {
+  int32 pageSize = 1;
+  int32 pageNumber = 2;
+}
+
+message PaginationSensorReadingResponse{
+  repeated SensorReadingResponse items = 1;
+  int32 pageSize = 2;
+  int32 pageNumber = 3;
+  bool hasPreviousPage = 4;
+  bool hasNextPage = 5;
+  int32 totalItems = 6;
+}
+
+message CreateSensorReadingRequest{
+  SensorReadingData data = 1;
+}
+
+message UpdateSensorReadingRequest{
+  string id = 1;
+  SensorReadingData data = 2;
+}
+
+message SensorReadingResponse {
+  string id = 1;
+  SensorReadingData data = 2;
+}
+
+message TimeRangeRequest {
+  int64 start = 1;
+  int64 end = 2;
+}
+
+message NumericAggregationResponse {
+  double value = 1;
+}
+
+service SensorReadingService{
+  // CRUD
+  rpc GetSensors(PaginationRequest) returns (PaginationSensorReadingResponse);
+  rpc GetSensorById(SensorReadingId) returns (SensorReadingResponse);
+  rpc CreateSensor(CreateSensorReadingRequest) returns (SensorReadingResponse);
+  rpc UpdateSensor(UpdateSensorReadingRequest) returns (SensorReadingResponse);
+  rpc DeleteSensor(SensorReadingId) returns (google.protobuf.Empty);
+
+  // Aggregation
+  rpc GetSensorByMinUsage(TimeRangeRequest) returns(SensorReadingResponse);
+  rpc GetSensorByMaxUsage(TimeRangeRequest) returns(SensorReadingResponse);
+  rpc GetSensorUsageAvg(TimeRangeRequest) returns(NumericAggregationResponse);
+  rpc GetSensorUsageSum(TimeRangeRequest) returns(NumericAggregationResponse);
+}
