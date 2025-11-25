@@ -1,4 +1,11 @@
 services:
+  data_manager:
+    build: ./data-manager
+    container_name: data_manager
+    ports:
+      - 5500:5500
+    depends_on:
+      - database
   database:
     image: postgres
     restart: always

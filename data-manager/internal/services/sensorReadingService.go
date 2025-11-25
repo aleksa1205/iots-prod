@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 )
 
@@ -40,7 +42,7 @@ func (s *SensorReadingService) GetByID(ctx context.Context, id string) (*domain.
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("SensorReadingService/GetById: Sensor with id %s not found", id)
+			return nil, status.Errorf(codes.NotFound, "SensorReadingService:GetByID: Sensor with id %s not found", id)
 		}
 		return nil, fmt.Errorf("SensorReadingService/GetById: Issue when fetching a record with %s id\nError: %v", id, err)
 	}

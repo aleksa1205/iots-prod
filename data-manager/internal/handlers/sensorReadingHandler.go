@@ -48,14 +48,9 @@ func (h *SensorReadingHandler) GetSensors(ctx context.Context, pag *sensorpb.Pag
 
 func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *sensorpb.SensorReadingId) (*sensorpb.SensorReadingResponse, error) {
 	sensor, err := h.service.GetByID(ctx, request.Id)
-
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, status.Errorf(codes.NotFound, "Sensor %v does not exist", request.Id)
-		}
-		return nil, status.Errorf(codes.Internal, "Failed getting sensor:\n%v", err)
+		return nil, err
 	}
-
 	return sensorpb.ToProto(sensor), nil
 }
 
