@@ -4,12 +4,10 @@ import (
 	"context"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/services"
-	"errors"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"gorm.io/gorm"
 )
 
 type SensorReadingHandler struct {
@@ -56,37 +54,25 @@ func (h *SensorReadingHandler) GetSensorById(ctx context.Context, request *senso
 
 func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensorpb.CreateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
 	sensor, err := h.service.Create(ctx, request.ToRequest())
-
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed creating sensor:\n%v", err)
+		return nil, err
 	}
-
 	return sensorpb.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) UpdateSensor(ctx context.Context, request *sensorpb.UpdateSensorReadingRequest) (*sensorpb.SensorReadingResponse, error) {
 	sensor, err := h.service.Update(ctx, request.Id, request.ToUpdateRequest())
-
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, status.Errorf(codes.NotFound, "Sensor %v does not exist", request.Id)
-		}
-		return nil, status.Errorf(codes.Internal, "Failed updating sensor:\n%v", err)
+		return nil, err
 	}
-
 	return sensorpb.ToProto(sensor), nil
 }
 
 func (h *SensorReadingHandler) DeleteSensor(ctx context.Context, request *sensorpb.SensorReadingId) (*emptypb.Empty, error) {
 	err := h.service.Delete(ctx, request.Id)
-
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, status.Errorf(codes.NotFound, "Sensor %v does not exist", request.Id)
-		}
-		return nil, status.Errorf(codes.Internal, "Failed deleting sensor:\n%v", err)
+		return nil, err
 	}
-
 	return &emptypb.Empty{}, nil
 }
 

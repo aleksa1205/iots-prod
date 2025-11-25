@@ -44,7 +44,7 @@ func (s *SensorReadingService) GetByID(ctx context.Context, id string) (*domain.
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, status.Errorf(codes.NotFound, "SensorReadingService:GetByID: Sensor with id %s not found", id)
 		}
-		return nil, fmt.Errorf("SensorReadingService/GetById: Issue when fetching a record with %s id\nError: %v", id, err)
+		return nil, status.Errorf(codes.Internal, "SensorReadingService/GetById: Issue when fetching a record with %s id\nError: %v", id, err)
 	}
 
 	return sensor, nil
@@ -95,7 +95,7 @@ func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorR
 	err := s.repository.Create(ctx, sensor)
 
 	if err != nil {
-		return nil, fmt.Errorf("SensorReadingService/Create: Creating sensor reading failed\nError: %w", err)
+		return nil, status.Errorf(codes.Internal, "SensorReadingService/Create: Creating sensor reading failed\nError: %w", err)
 	}
 	return sensor, nil
 }
@@ -105,16 +105,16 @@ func (s *SensorReadingService) Update(ctx context.Context, id string, request *d
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("SensorReadingService/Update: Sensor with id %s not found", id)
+			return nil, status.Errorf(codes.NotFound, "SensorReadingService/Update: Sensor with id %s not found", id)
 		}
-		return nil, fmt.Errorf("SensorReadingService/Update: Issue when updating a record with %s id\nError: %v", id, err)
+		return nil, status.Errorf(codes.Internal, "SensorReadingService/Update: Issue when updating a record with %s id\nError: %v", id, err)
 	}
 
 	request.UpdateDomain(sensor)
 	err = s.repository.Update(ctx, sensor)
 
 	if err != nil {
-		return nil, fmt.Errorf("SensorReadingService: Updating sensor reading with id %s failed\nError: %w", id, err)
+		return nil, status.Errorf(codes.Internal, "SensorReadingService: Updating sensor reading with id %s failed\nError: %w", id, err)
 	}
 
 	return sensor, nil
@@ -125,9 +125,9 @@ func (s *SensorReadingService) Delete(ctx context.Context, id string) error {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return fmt.Errorf("SensorReadingService/Delete: Sensor with id %s not found", id)
+			return status.Errorf(codes.NotFound, "SensorReadingService/Delete: Sensor with id %s not found", id)
 		}
-		return fmt.Errorf("SensorReadingService/Delete: Issue when deleting a record with %s id\nError: %w", id, err)
+		return status.Errorf(codes.Internal, "SensorReadingService/Delete: Issue when deleting a record with %s id\nError: %w", id, err)
 	}
 
 	return s.repository.Delete(ctx, sensor)
