@@ -1,3 +1,10 @@
-﻿namespace Gateway.DTOs.Request.Id;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
-public record IdRequest(string Id);
+namespace Gateway.DTOs.Request.Id;
+
+public record IdRequest
+{
+    [FromRoute(Name = "id")]
+    [Required] public required string Id { get; init; }
+}

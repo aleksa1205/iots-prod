@@ -1,8 +1,7 @@
-
-
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Gateway.Clients;
+using Gateway.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +10,10 @@ builder.Services
     .AddSwaggerGen()
     .AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true)
     .AddFluentValidationAutoValidation()
-    .AddControllers();
+    .AddControllers(options =>
+    {
+        options.Filters.Add<RpcExceptionFilter>();
+    });
 
 builder.Services.AddGrpcClient<SensorReadingService.SensorReadingServiceClient>(o =>
 {

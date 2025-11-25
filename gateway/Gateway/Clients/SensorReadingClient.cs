@@ -1,4 +1,6 @@
-﻿using Gateway.DTOs.Extensions;
+﻿using Gateway.Common;
+using Gateway.DTOs.Extensions;
+using Gateway.DTOs.Request.Filtering;
 using Gateway.DTOs.Request.Id;
 using Gateway.DTOs.Response;
 
@@ -13,12 +15,12 @@ public class SensorReadingClient
         _client = client;
     }
 
-    public async Task<PageOfResponse<SensorResponse>> GetAllAsync(int pageNumber = 1, int pageSize = 10)
+    public async Task<PageOfResponse<SensorResponse>> GetAllAsync(PageParams pageParams)
     {
         var request = new PaginationRequest
         {
-            PageNumber = pageNumber,
-            PageSize = pageSize
+            PageNumber = pageParams.Page ?? Constants.Request.PageNumber,
+            PageSize = pageParams.PageSize ?? Constants.Request.PageSize
         };
 
         return (await _client.GetSensorsAsync(request)).ToResponse();
