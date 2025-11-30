@@ -25,6 +25,7 @@ func InitServer() net.Listener {
 	if err != nil {
 		log.Fatalf("Error listening for tcp connections on %v: %v", address, err)
 	}
+	log.Println("Listening on " + address)
 
 	return listen
 }
