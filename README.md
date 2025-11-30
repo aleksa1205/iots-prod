@@ -2,7 +2,7 @@
 As part of the **Internet of things and Services** univeristy course, several projects were developed to explore IoT data acquistion, processing and service-oriented architectures. These projects focused on building scalable systems for managing sensor data, implementing REST and gRPC APIs, and deploying services in containerized environments.
 
 ## Project I - IOT Microservices Application
-THe project focused on building a **microservice-based system** for managing IoT sensor data. It consisted of two two services: `Gateway` and `DataManager`.
+The project focused on building a **microservice-based system** for managing IoT sensor data. It consisted of two services: `Gateway` and `DataManager`.
 
 ### DataManager
 The **DataManager** service was responsible for all interactions with the **PostgreSQL** database. It exposed a **gRPC API** providing full CRUD operations on sensor data, enabling the **Gateway** service to efficiently access and manipulate stored information. Its primary role was to act as a reliable data access layer, ensuring consistent storage and retrieval of IoT sensor readings, while also supports aggregation operations.
