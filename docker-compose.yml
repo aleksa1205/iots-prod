@@ -3,7 +3,11 @@ services:
     build: ./data-manager
     container_name: data_manager
     ports:
-      - 5500:5500
+      - 5500:${DATA_MANAGER_PORT}
+    environment:
+      DB_CONNECTION_STRING: host=database user=${POSTGRES_DB_USER} password=${POSTGRES_DB_PASSWORD} dbname=${POSTGRES_DB_NAME} port=5432 sslmode=disable
+      PORT: ${DATA_MANAGER_PORT}
+      HOST: ${DATA_MANAGER_HOST}
     depends_on:
       - database
   database:

@@ -9,6 +9,8 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+// implement retry logic
+// health check
 func ConnectToDatabase(connectionString string) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(connectionString), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
