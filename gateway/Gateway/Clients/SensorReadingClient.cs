@@ -3,6 +3,7 @@ using Gateway.DTOs.Extensions;
 using Gateway.DTOs.Request;
 using Gateway.DTOs.Request.Filtering;
 using Gateway.DTOs.Request.Id;
+using Gateway.DTOs.Request.Time;
 using Gateway.DTOs.Response;
 
 namespace Gateway.Clients;
@@ -37,10 +38,9 @@ public class SensorReadingClient
     }
 
     public async Task<SensorResponse> CreateAsync(SensorRequest request)
-    {
-        var proto = request.ToProto();
-        return (await _client.CreateSensorAsync(proto)).ToResponse();
-    }
+        => (await _client
+            .CreateSensorAsync(request.ToProto()))
+            .ToResponse();
 
     public async Task<SensorResponse> UpdateAsync(IdRequest id, SensorRequest request)
     {
@@ -61,4 +61,23 @@ public class SensorReadingClient
         };
         await _client.DeleteSensorAsync(id);
     }
+
+    public async Task<SensorResponse> GetByMinUsage(TimeRequest request)
+        => (await _client
+            .GetSensorByMinUsageAsync(request.ToProto()))
+            .ToResponse();
+
+    public async Task<SensorResponse> GetByMaxUsage(TimeRequest request)
+        => (await _client
+            .GetSensorByMaxUsageAsync(request.ToProto()))
+            .ToResponse();
+    
+
+    public async Task<double> GetAvgUsage(TimeRequest request)
+        => (await _client
+            .GetSensorUsageAvgAsync(request.ToProto())).Value;
+
+    public async Task<double> GetSumUsage(TimeRequest request)
+        => (await _client
+                .GetSensorUsageSumAsync(request.ToProto())).Value;
 }

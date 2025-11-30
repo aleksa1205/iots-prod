@@ -2,6 +2,7 @@
 using Gateway.DTOs.Request;
 using Gateway.DTOs.Request.Filtering;
 using Gateway.DTOs.Request.Id;
+using Gateway.DTOs.Request.Time;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gateway.Controllers;
@@ -58,5 +59,41 @@ public class SensorReadingController(SensorReadingClient client) : ControllerBas
     {
         await client.DeleteAsync(request);
         return NoContent();
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [HttpGet("min")]
+    public async Task<IActionResult> GetByMinUsage([FromQuery] TimeRequest request)
+    {
+        return Ok(await client.GetByMinUsage(request));
+    }
+    
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [HttpGet("max")]
+    public async Task<IActionResult> GetByMaxUsage([FromQuery] TimeRequest request)
+    {
+        return Ok(await client.GetByMaxUsage(request));
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [HttpGet("avg")]
+    public async Task<IActionResult> GetByAvgUsage([FromQuery] TimeRequest request)
+    {
+        return Ok(await client.GetAvgUsage(request));
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [HttpGet("sum")]
+    public async Task<IActionResult> GetSum([FromQuery] TimeRequest request)
+    {
+        return Ok(await client.GetSumUsage(request));
     }
 }

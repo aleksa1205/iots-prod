@@ -10,7 +10,7 @@ public record SensorResponse
     
     [Required] public required double GeneratedKw { get; init; }
     
-    [Required] public required long Time { get; init; }
+    [Required] public required DateTime Time { get; init; }
     
     [Required] public float Temperature { get; init; }
     

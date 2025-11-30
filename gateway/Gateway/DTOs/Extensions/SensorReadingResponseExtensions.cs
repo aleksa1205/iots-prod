@@ -13,7 +13,7 @@ public static class SensorReadingResponseExtensions
             Humidity = response.Data.Humidity,
             Pressure = response.Data.Pressure,
             Temperature = response.Data.Temperature,
-            Time = response.Data.Time,
+            Time = DateTimeOffset.FromUnixTimeSeconds(response.Data.Time).UtcDateTime,
             UsedKw = response.Data.UsedKw,
             Id = response.Id
         };
