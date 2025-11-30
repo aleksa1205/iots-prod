@@ -1,10 +1,11 @@
 ﻿using Gateway.Common;
 using Gateway.DTOs.Extensions;
-using Gateway.DTOs.Request;
 using Gateway.DTOs.Request.Filtering;
 using Gateway.DTOs.Request.Id;
+using Gateway.DTOs.Request.Sensor;
 using Gateway.DTOs.Request.Time;
 using Gateway.DTOs.Response;
+using Gateway.DTOs.Response.Sensor;
 
 namespace Gateway.Clients;
 

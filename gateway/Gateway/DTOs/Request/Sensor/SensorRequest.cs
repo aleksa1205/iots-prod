@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Gateway.DTOs.Request;
+namespace Gateway.DTOs.Request.Sensor;
 
 public record SensorRequest
 {

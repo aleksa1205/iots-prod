@@ -1,7 +1,7 @@
 ﻿using Gateway.Clients;
-using Gateway.DTOs.Request;
 using Gateway.DTOs.Request.Filtering;
 using Gateway.DTOs.Request.Id;
+using Gateway.DTOs.Request.Sensor;
 using Gateway.DTOs.Request.Time;
 using Microsoft.AspNetCore.Mvc;
 

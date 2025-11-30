@@ -4,7 +4,7 @@ public static class Constants
 {
     public static class Request
     {
-        public static int PageSize = 10;
-        public static int PageNumber = 1;
+        public static readonly int PageSize = 10;
+        public static readonly int PageNumber = 1;
     }
 }

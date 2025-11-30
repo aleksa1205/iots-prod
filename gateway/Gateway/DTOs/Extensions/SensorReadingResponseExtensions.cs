@@ -1,4 +1,4 @@
-﻿using Gateway.DTOs.Response;
+﻿using Gateway.DTOs.Response.Sensor;
 
 namespace Gateway.DTOs.Extensions;
 

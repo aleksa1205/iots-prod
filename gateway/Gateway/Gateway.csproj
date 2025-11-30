@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+      <UserSecretsId>bd4728e9-b507-4953-a0d7-8a4dffc4aecc</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentValidation" Version="12.1.0" />

@@ -1,7 +1,11 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Gateway.Clients;
+using Gateway.Common;
 using Gateway.Filters;
+using Gateway.OpenApi;
+using Microsoft.Extensions.Options;
+using GatewayOptions = Gateway.Common.Gateway;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,13 +18,17 @@ builder.Services
     {
         options.Filters.Add<RpcExceptionFilter>();
     });
+builder.Services.Configure<DataManager>(builder.Configuration.GetSection(nameof(DataManager)));
+builder.Services.Configure<GatewayOptions>(builder.Configuration.GetSection(typeof(GatewayOptions).Name));
 
-builder.Services.AddGrpcClient<SensorReadingService.SensorReadingServiceClient>(o =>
+builder.Services.AddGrpcClient<SensorReadingService.SensorReadingServiceClient>((sp, options) =>
 {
-    o.Address = new Uri("http://localhost:4880");
+    var configuration = sp.GetRequiredService<IOptions<DataManager>>().Value;
+    options.Address = new Uri(configuration.Address);
 });
 
 builder.Services.AddSingleton<SensorReadingClient>();
+builder.Services.AddHostedService<OpenApiFetcher>();
 
 var app = builder.Build();
 
