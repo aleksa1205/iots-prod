@@ -28,18 +28,17 @@ builder.Services.AddGrpcClient<SensorReadingService.SensorReadingServiceClient>(
 });
 
 builder.Services.AddSingleton<SensorReadingClient>();
-builder.Services.AddHostedService<OpenApiFetcher>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddHostedService<OpenApiFetcher>();
+}
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();

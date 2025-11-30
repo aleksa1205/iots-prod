@@ -1,4 +1,14 @@
 services:
+  gateway:
+    build: ./gateway
+    container_name: gateway
+    ports:
+      - ${GATEWAY_PORT}:8080
+    environment:
+      DataManager__Address: http://data_manager:${DATA_MANAGER_PORT}
+    depends_on:
+      - data_manager
+
   data_manager:
     build: ./data-manager
     container_name: data_manager
@@ -7,9 +17,10 @@ services:
     environment:
       DB_CONNECTION_STRING: host=database user=${POSTGRES_DB_USER} password=${POSTGRES_DB_PASSWORD} dbname=${POSTGRES_DB_NAME} port=5432 sslmode=disable
       PORT: ${DATA_MANAGER_PORT}
-      HOST: ${DATA_MANAGER_HOST}
+      HOST: data_manager
     depends_on:
       - database
+
   database:
     image: postgres
     restart: always
@@ -20,10 +31,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB_NAME}
     ports:
       - 5432:5432
+
   adminer:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 9000:8080
     depends_on:
       - database
