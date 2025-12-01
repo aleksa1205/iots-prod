@@ -64,6 +64,7 @@ service SensorReadingService{
   rpc CreateSensor(CreateSensorReadingRequest) returns (SensorReadingResponse);
   rpc UpdateSensor(UpdateSensorReadingRequest) returns (SensorReadingResponse);
   rpc DeleteSensor(SensorReadingId) returns (google.protobuf.Empty);
+  rpc StreamSensorReadings(stream CreateSensorReadingRequest) returns (google.protobuf.Empty);
 
   // Aggregation
   rpc GetSensorByMinUsage(TimeRangeRequest) returns(SensorReadingResponse);

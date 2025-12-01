@@ -4,6 +4,8 @@ import (
 	"context"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/services"
+	"fmt"
+	"io"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -113,4 +115,23 @@ func (h *SensorReadingHandler) GetSensorUsageSum(ctx context.Context, request *s
 	}
 
 	return &sensorpb.NumericAggregationResponse{Value: value}, nil
+}
+
+func (h *SensorReadingHandler) StreamSensorReadings(stream sensorpb.SensorReadingService_StreamSensorReadingsServer) error {
+	for {
+		req, err := stream.Recv()
+
+		if err != nil {
+			if err == io.EOF {
+				fmt.Println("Stream finished")
+				break
+			}
+			return status.Errorf(codes.Internal, "Failed streaming sensor readings: %v", err)
+		}
+		_, err = h.service.Create(stream.Context(), req.ToRequest())
+		if err != nil {
+			return status.Errorf(codes.Internal, "Failed streaming sensor readings: %v", err)
+		}
+	}
+	return stream.SendAndClose(&emptypb.Empty{})
 }

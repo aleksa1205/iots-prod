@@ -20,15 +20,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SensorReadingService_GetSensors_FullMethodName          = "/SensorReadingService/GetSensors"
-	SensorReadingService_GetSensorById_FullMethodName       = "/SensorReadingService/GetSensorById"
-	SensorReadingService_CreateSensor_FullMethodName        = "/SensorReadingService/CreateSensor"
-	SensorReadingService_UpdateSensor_FullMethodName        = "/SensorReadingService/UpdateSensor"
-	SensorReadingService_DeleteSensor_FullMethodName        = "/SensorReadingService/DeleteSensor"
-	SensorReadingService_GetSensorByMinUsage_FullMethodName = "/SensorReadingService/GetSensorByMinUsage"
-	SensorReadingService_GetSensorByMaxUsage_FullMethodName = "/SensorReadingService/GetSensorByMaxUsage"
-	SensorReadingService_GetSensorUsageAvg_FullMethodName   = "/SensorReadingService/GetSensorUsageAvg"
-	SensorReadingService_GetSensorUsageSum_FullMethodName   = "/SensorReadingService/GetSensorUsageSum"
+	SensorReadingService_GetSensors_FullMethodName           = "/SensorReadingService/GetSensors"
+	SensorReadingService_GetSensorById_FullMethodName        = "/SensorReadingService/GetSensorById"
+	SensorReadingService_CreateSensor_FullMethodName         = "/SensorReadingService/CreateSensor"
+	SensorReadingService_UpdateSensor_FullMethodName         = "/SensorReadingService/UpdateSensor"
+	SensorReadingService_DeleteSensor_FullMethodName         = "/SensorReadingService/DeleteSensor"
+	SensorReadingService_StreamSensorReadings_FullMethodName = "/SensorReadingService/StreamSensorReadings"
+	SensorReadingService_GetSensorByMinUsage_FullMethodName  = "/SensorReadingService/GetSensorByMinUsage"
+	SensorReadingService_GetSensorByMaxUsage_FullMethodName  = "/SensorReadingService/GetSensorByMaxUsage"
+	SensorReadingService_GetSensorUsageAvg_FullMethodName    = "/SensorReadingService/GetSensorUsageAvg"
+	SensorReadingService_GetSensorUsageSum_FullMethodName    = "/SensorReadingService/GetSensorUsageSum"
 )
 
 // SensorReadingServiceClient is the client API for SensorReadingService service.
@@ -41,6 +42,7 @@ type SensorReadingServiceClient interface {
 	CreateSensor(ctx context.Context, in *CreateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	UpdateSensor(ctx context.Context, in *UpdateSensorReadingRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	DeleteSensor(ctx context.Context, in *SensorReadingId, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	StreamSensorReadings(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[CreateSensorReadingRequest, emptypb.Empty], error)
 	// Aggregation
 	GetSensorByMinUsage(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
 	GetSensorByMaxUsage(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error)
@@ -106,6 +108,19 @@ func (c *sensorReadingServiceClient) DeleteSensor(ctx context.Context, in *Senso
 	return out, nil
 }
 
+func (c *sensorReadingServiceClient) StreamSensorReadings(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[CreateSensorReadingRequest, emptypb.Empty], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &SensorReadingService_ServiceDesc.Streams[0], SensorReadingService_StreamSensorReadings_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[CreateSensorReadingRequest, emptypb.Empty]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type SensorReadingService_StreamSensorReadingsClient = grpc.ClientStreamingClient[CreateSensorReadingRequest, emptypb.Empty]
+
 func (c *sensorReadingServiceClient) GetSensorByMinUsage(ctx context.Context, in *TimeRangeRequest, opts ...grpc.CallOption) (*SensorReadingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SensorReadingResponse)
@@ -156,6 +171,7 @@ type SensorReadingServiceServer interface {
 	CreateSensor(context.Context, *CreateSensorReadingRequest) (*SensorReadingResponse, error)
 	UpdateSensor(context.Context, *UpdateSensorReadingRequest) (*SensorReadingResponse, error)
 	DeleteSensor(context.Context, *SensorReadingId) (*emptypb.Empty, error)
+	StreamSensorReadings(grpc.ClientStreamingServer[CreateSensorReadingRequest, emptypb.Empty]) error
 	// Aggregation
 	GetSensorByMinUsage(context.Context, *TimeRangeRequest) (*SensorReadingResponse, error)
 	GetSensorByMaxUsage(context.Context, *TimeRangeRequest) (*SensorReadingResponse, error)
@@ -185,6 +201,9 @@ func (UnimplementedSensorReadingServiceServer) UpdateSensor(context.Context, *Up
 }
 func (UnimplementedSensorReadingServiceServer) DeleteSensor(context.Context, *SensorReadingId) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSensor not implemented")
+}
+func (UnimplementedSensorReadingServiceServer) StreamSensorReadings(grpc.ClientStreamingServer[CreateSensorReadingRequest, emptypb.Empty]) error {
+	return status.Errorf(codes.Unimplemented, "method StreamSensorReadings not implemented")
 }
 func (UnimplementedSensorReadingServiceServer) GetSensorByMinUsage(context.Context, *TimeRangeRequest) (*SensorReadingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSensorByMinUsage not implemented")
@@ -309,6 +328,13 @@ func _SensorReadingService_DeleteSensor_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SensorReadingService_StreamSensorReadings_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(SensorReadingServiceServer).StreamSensorReadings(&grpc.GenericServerStream[CreateSensorReadingRequest, emptypb.Empty]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type SensorReadingService_StreamSensorReadingsServer = grpc.ClientStreamingServer[CreateSensorReadingRequest, emptypb.Empty]
+
 func _SensorReadingService_GetSensorByMinUsage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TimeRangeRequest)
 	if err := dec(in); err != nil {
@@ -425,6 +451,12 @@ var SensorReadingService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SensorReadingService_GetSensorUsageSum_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamSensorReadings",
+			Handler:       _SensorReadingService_StreamSensorReadings_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "sensor_reading.proto",
 }

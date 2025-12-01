@@ -581,14 +581,15 @@ const file_sensor_reading_proto_rawDesc = "" +
 	"\x05start\x18\x01 \x01(\x03R\x05start\x12\x10\n" +
 	"\x03end\x18\x02 \x01(\x03R\x03end\"2\n" +
 	"\x1aNumericAggregationResponse\x12\x14\n" +
-	"\x05value\x18\x01 \x01(\x01R\x05value2\xe7\x04\n" +
+	"\x05value\x18\x01 \x01(\x01R\x05value2\xb6\x05\n" +
 	"\x14SensorReadingService\x12B\n" +
 	"\n" +
 	"GetSensors\x12\x12.PaginationRequest\x1a .PaginationSensorReadingResponse\x129\n" +
 	"\rGetSensorById\x12\x10.SensorReadingId\x1a\x16.SensorReadingResponse\x12C\n" +
 	"\fCreateSensor\x12\x1b.CreateSensorReadingRequest\x1a\x16.SensorReadingResponse\x12C\n" +
 	"\fUpdateSensor\x12\x1b.UpdateSensorReadingRequest\x1a\x16.SensorReadingResponse\x128\n" +
-	"\fDeleteSensor\x12\x10.SensorReadingId\x1a\x16.google.protobuf.Empty\x12@\n" +
+	"\fDeleteSensor\x12\x10.SensorReadingId\x1a\x16.google.protobuf.Empty\x12M\n" +
+	"\x14StreamSensorReadings\x12\x1b.CreateSensorReadingRequest\x1a\x16.google.protobuf.Empty(\x01\x12@\n" +
 	"\x13GetSensorByMinUsage\x12\x11.TimeRangeRequest\x1a\x16.SensorReadingResponse\x12@\n" +
 	"\x13GetSensorByMaxUsage\x12\x11.TimeRangeRequest\x1a\x16.SensorReadingResponse\x12C\n" +
 	"\x11GetSensorUsageAvg\x12\x11.TimeRangeRequest\x1a\x1b.NumericAggregationResponse\x12C\n" +
@@ -629,21 +630,23 @@ var file_sensor_reading_proto_depIdxs = []int32{
 	4,  // 6: SensorReadingService.CreateSensor:input_type -> CreateSensorReadingRequest
 	5,  // 7: SensorReadingService.UpdateSensor:input_type -> UpdateSensorReadingRequest
 	1,  // 8: SensorReadingService.DeleteSensor:input_type -> SensorReadingId
-	7,  // 9: SensorReadingService.GetSensorByMinUsage:input_type -> TimeRangeRequest
-	7,  // 10: SensorReadingService.GetSensorByMaxUsage:input_type -> TimeRangeRequest
-	7,  // 11: SensorReadingService.GetSensorUsageAvg:input_type -> TimeRangeRequest
-	7,  // 12: SensorReadingService.GetSensorUsageSum:input_type -> TimeRangeRequest
-	3,  // 13: SensorReadingService.GetSensors:output_type -> PaginationSensorReadingResponse
-	6,  // 14: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
-	6,  // 15: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
-	6,  // 16: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
-	9,  // 17: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
-	6,  // 18: SensorReadingService.GetSensorByMinUsage:output_type -> SensorReadingResponse
-	6,  // 19: SensorReadingService.GetSensorByMaxUsage:output_type -> SensorReadingResponse
-	8,  // 20: SensorReadingService.GetSensorUsageAvg:output_type -> NumericAggregationResponse
-	8,  // 21: SensorReadingService.GetSensorUsageSum:output_type -> NumericAggregationResponse
-	13, // [13:22] is the sub-list for method output_type
-	4,  // [4:13] is the sub-list for method input_type
+	4,  // 9: SensorReadingService.StreamSensorReadings:input_type -> CreateSensorReadingRequest
+	7,  // 10: SensorReadingService.GetSensorByMinUsage:input_type -> TimeRangeRequest
+	7,  // 11: SensorReadingService.GetSensorByMaxUsage:input_type -> TimeRangeRequest
+	7,  // 12: SensorReadingService.GetSensorUsageAvg:input_type -> TimeRangeRequest
+	7,  // 13: SensorReadingService.GetSensorUsageSum:input_type -> TimeRangeRequest
+	3,  // 14: SensorReadingService.GetSensors:output_type -> PaginationSensorReadingResponse
+	6,  // 15: SensorReadingService.GetSensorById:output_type -> SensorReadingResponse
+	6,  // 16: SensorReadingService.CreateSensor:output_type -> SensorReadingResponse
+	6,  // 17: SensorReadingService.UpdateSensor:output_type -> SensorReadingResponse
+	9,  // 18: SensorReadingService.DeleteSensor:output_type -> google.protobuf.Empty
+	9,  // 19: SensorReadingService.StreamSensorReadings:output_type -> google.protobuf.Empty
+	6,  // 20: SensorReadingService.GetSensorByMinUsage:output_type -> SensorReadingResponse
+	6,  // 21: SensorReadingService.GetSensorByMaxUsage:output_type -> SensorReadingResponse
+	8,  // 22: SensorReadingService.GetSensorUsageAvg:output_type -> NumericAggregationResponse
+	8,  // 23: SensorReadingService.GetSensorUsageSum:output_type -> NumericAggregationResponse
+	14, // [14:24] is the sub-list for method output_type
+	4,  // [4:14] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name
