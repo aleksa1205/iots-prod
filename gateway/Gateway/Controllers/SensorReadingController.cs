@@ -96,4 +96,19 @@ public class SensorReadingController(SensorReadingClient client) : ControllerBas
     {
         return Ok(await client.GetSumUsage(request));
     }
+
+    [HttpPost("stream")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Stream([FromBody] IEnumerable<SensorRequest> readings)
+    {
+        if (readings is null || !readings.Any())
+        {
+            return BadRequest("No readings found");
+        }
+        
+        await client.Stream(readings);
+        return Ok();
+    }
 }

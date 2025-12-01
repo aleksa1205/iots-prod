@@ -81,4 +81,18 @@ public class SensorReadingClient
     public async Task<double> GetSumUsage(TimeRequest request)
         => (await _client
                 .GetSensorUsageSumAsync(request.ToProto())).Value;
+
+    public async Task Stream(IEnumerable<SensorRequest> readings)
+    {
+        using var call = _client.StreamSensorReadings();
+        
+        foreach (var reading in readings)
+        {
+            var proto = reading.ToProto();
+            await call.RequestStream.WriteAsync(proto);
+        }
+        
+        await call.RequestStream.CompleteAsync();
+        await call.ResponseAsync;
+    }
 }
