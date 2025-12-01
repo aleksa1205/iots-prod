@@ -15,6 +15,9 @@ public class OpenApiFetcher : BackgroundService
     {
         await Task.Delay(3000, stoppingToken);
 
+        if (string.IsNullOrWhiteSpace(_swaggerUrl))
+            return;
+        
         var httpClient = new HttpClient();
         var json = await httpClient.GetStringAsync($"{_swaggerUrl}/swagger/v1/swagger.json", stoppingToken);
         await File.WriteAllTextAsync("OpenApi/openapi.json", json, stoppingToken);
