@@ -11,7 +11,7 @@ public class TimeRequestValidator : AbstractValidator<TimeRequest>
             .WithMessage("Start time must be greater than January 1st 1970");
 
         RuleFor(x => x.StartTime)
-            .GreaterThan(x => x.EndTime)
+            .LessThan(x => x.EndTime)
             .WithMessage("Start time must be greater than End time");
     }
 }

@@ -23,7 +23,7 @@ public class GatewayClient
             try
             {
                 var response =
-                    await _client.PostAsJsonAsync($"{_gatewayOptions.Value.Address}/{_gatewayOptions.Value.Endpoint}", sensors, cancellationToken);
+                    await _client.PostAsJsonAsync($"{_gatewayOptions.Value.Address}/{_gatewayOptions.Value.PostEndpoint}", sensors, cancellationToken);
         
                 response.EnsureSuccessStatusCode();
             }
@@ -37,8 +37,6 @@ public class GatewayClient
                 }
                 await Task.Delay(10000, cancellationToken);
             }
-
         }
-
     }
 }

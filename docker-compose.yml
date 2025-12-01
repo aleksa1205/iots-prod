@@ -5,7 +5,7 @@ services:
     ports:
       - ${GATEWAY_PORT}:8080
     environment:
-      DataManager__Address: http://data_manager:${DATA_MANAGER_PORT}
+      DataManager__Address: http://data_manager:5500
     depends_on:
       - data_manager
 
@@ -16,10 +16,23 @@ services:
       - ${DATA_MANAGER_PORT}:5500
     environment:
       DB_CONNECTION_STRING: host=database user=${POSTGRES_DB_USER} password=${POSTGRES_DB_PASSWORD} dbname=${POSTGRES_DB_NAME} port=5432 sslmode=disable
-      PORT: ${DATA_MANAGER_PORT}
+      PORT: 5500
       HOST: data_manager
     depends_on:
       - database
+
+  sensor_generator:
+    build: ./sensor-generator
+    container_name: sensor_generator
+    ports:
+      - ${SENSOR_GENERATOR_PORT}:8082
+    environment:
+      Gateway__Address: http://gateway:8080
+      Gateway__BatchSize: ${SENSOR_GENERATOR_BATCH_SIZE}
+      Gateway__PostEndpoint: ${SENSOR_GENERATOR_POST}
+      Gateway__GetEndpoint: ${SENSOR_GENERATOR_GET}
+    depends_on:
+      - gateway
 
   database:
     image: postgres
