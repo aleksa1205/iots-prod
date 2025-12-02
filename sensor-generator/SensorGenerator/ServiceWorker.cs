@@ -18,6 +18,7 @@ public class ServiceWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var options = _gatewayOptions.Value;
         string filePath = "Dataset.csv";
         if (!File.Exists(filePath))
         {
@@ -47,7 +48,7 @@ public class ServiceWorker : BackgroundService
                 Pressure = float.Parse(values[6]),
             });
 
-            if (batch.Count >= _gatewayOptions.Value.BatchSize)
+            if (batch.Count >= options.BatchSize)
             {
                 await _client.SendAsync(batch, stoppingToken);
                 Console.WriteLine($"Sent batch {count} of {batch.Count}");
@@ -61,6 +62,6 @@ public class ServiceWorker : BackgroundService
             Console.WriteLine($"Sent {batch.Count} of {batch.Count} items");
         }
         
-        Console.WriteLine("Finished sending sensor data.");
+        Console.WriteLine("Finished sending data from the IoT sensors.");
     }
 }

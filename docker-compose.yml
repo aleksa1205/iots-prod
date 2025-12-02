@@ -29,8 +29,8 @@ services:
     environment:
       Gateway__Address: http://gateway:8080
       Gateway__BatchSize: ${SENSOR_GENERATOR_BATCH_SIZE}
-      Gateway__PostEndpoint: ${SENSOR_GENERATOR_POST}
-      Gateway__GetEndpoint: ${SENSOR_GENERATOR_GET}
+      Gateway__Endpoint: ${SENSOR_GENERATOR_ENDPOINT}
+      Gateway__BatchTimeout: ${SENSOR_GENERATOR_BATCH_TIMEOUT}
     depends_on:
       - gateway
 
