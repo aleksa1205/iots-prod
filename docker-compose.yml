@@ -52,3 +52,15 @@ services:
       - 9000:8080
     depends_on:
       - database
+
+  mqtt:
+    image: eclipse-mosquitto
+    container_name: mqtt
+    ports:
+      - 1883:1883
+      - 9001:9001
+    volumes:
+      - ./mqtt/config:/mosquitto/config:rw
+      - ./mqtt/data:/mosquitto/data:rw
+      - ./mqtt/log:/mosquitto/log:rw
+    restart: unless-stopped
