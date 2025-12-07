@@ -2,14 +2,11 @@ package handlers
 
 import (
 	"context"
-	"data-manager/internal/dtos"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/services"
-	"encoding/json"
 	"fmt"
 	"io"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -18,16 +15,14 @@ import (
 type SensorReadingHandler struct {
 	sensorpb.UnimplementedSensorReadingServiceServer
 	service services.SensorReadingServiceInterface
-	broker  mqtt.Client
 }
 
 var _ sensorpb.SensorReadingServiceServer = (*SensorReadingHandler)(nil)
 
-func NewSensorReadingHandler(service services.SensorReadingServiceInterface, broker mqtt.Client) *SensorReadingHandler {
+func NewSensorReadingHandler(service services.SensorReadingServiceInterface) *SensorReadingHandler {
 	return &SensorReadingHandler{
 		UnimplementedSensorReadingServiceServer: sensorpb.UnimplementedSensorReadingServiceServer{},
-		service:                                 service,
-		broker:                                  broker}
+		service:                                 service}
 }
 
 func (h *SensorReadingHandler) GetSensors(ctx context.Context, pag *sensorpb.PaginationRequest) (*sensorpb.PaginationSensorReadingResponse, error) {
@@ -64,18 +59,7 @@ func (h *SensorReadingHandler) CreateSensor(ctx context.Context, request *sensor
 	if err != nil {
 		return nil, err
 	}
-
-	payload, err := json.Marshal(dtos.ToOverview(sensor))
-
-	if err != nil {
-		return nil, err
-	}
-
-	token := h.broker.Publish("data", 2, false, payload)
-	if token.Wait() && token.Error() != nil {
-		return nil, token.Error()
-	}
-
+	
 	return sensorpb.ToProto(sensor), nil
 }
 

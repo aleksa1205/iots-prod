@@ -66,16 +66,17 @@ func main() {
 	defer sqlDb.Close()
 
 	repository := repositories.NewSensorReadingRepository(db)
-	service := services.NewSensorReadingService(repository)
-
-	server := grpc.NewServer()
 
 	broker, err := InitMqttClient()
 	if err != nil {
 		log.Fatalf("Failed to connect to MQTT client: %v", err)
 	}
+	topic := config.GetEnvOrPanic(config.EnvKeys.Topic)
+	service := services.NewSensorReadingService(repository, broker, topic)
 
-	handler := handlers.NewSensorReadingHandler(service, broker)
+	server := grpc.NewServer()
+
+	handler := handlers.NewSensorReadingHandler(service)
 	sensorpb.RegisterSensorReadingServiceServer(server, handler)
 
 	log.Println("Starting server...")

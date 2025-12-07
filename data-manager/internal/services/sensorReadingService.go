@@ -5,9 +5,11 @@ import (
 	"data-manager/internal/dtos"
 	domain "data-manager/internal/entities"
 	"data-manager/internal/repositories"
+	"encoding/json"
 	"errors"
 	"fmt"
 
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -15,10 +17,12 @@ import (
 
 type SensorReadingService struct {
 	repository repositories.SensorReadingRepository
+	broker     mqtt.Client
+	topic      string
 }
 
-func NewSensorReadingService(repository repositories.SensorReadingRepository) SensorReadingServiceInterface {
-	return &SensorReadingService{repository: repository}
+func NewSensorReadingService(repository repositories.SensorReadingRepository, broker mqtt.Client, topic string) SensorReadingServiceInterface {
+	return &SensorReadingService{repository: repository, broker: broker, topic: topic}
 }
 
 func (s *SensorReadingService) GetAllSensors(ctx context.Context, pageSize int32, pageNumber int32) (*domain.PaginatedSensorReading, error) {
@@ -88,6 +92,12 @@ func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "SensorReadingService/Create: Creating sensor reading failed\nError: %w", err)
 	}
+
+	err = s.publishToTopic(sensor)
+	if err != nil {
+		fmt.Printf("SensorReadingService/Create: Publishing sensor reading failed\nError: %w", err)
+	}
+
 	return sensor, nil
 }
 
@@ -125,6 +135,19 @@ func (s *SensorReadingService) mustExist(ctx context.Context, id string) (entity
 		return nil, status.Errorf(codes.Internal, "SensorReadingService/Delete: Issue when deleting a record with %s id\nError: %w", id, err)
 	}
 	return sensor, nil
+}
+
+func (s *SensorReadingService) publishToTopic(sensor *domain.SensorReading) error {
+	payload, err := json.Marshal(dtos.ToOverview(sensor))
+	if err != nil {
+		return err
+	}
+
+	token := s.broker.Publish(s.topic, 2, false, payload)
+	if token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+	return nil
 }
 
 var _ SensorReadingServiceInterface = (*SensorReadingService)(nil)

@@ -7,6 +7,7 @@ type EnvironmentVariableKeys struct {
 	Host                     string
 	Broker                   string
 	ClientId                 string
+	Topic                    string
 }
 
 var EnvKeys = EnvironmentVariableKeys{
@@ -16,4 +17,5 @@ var EnvKeys = EnvironmentVariableKeys{
 	Port:                     "PORT",
 	Broker:                   "BROKER",
 	ClientId:                 "CLIENT_ID",
+	Topic:                    "TOPIC",
 }

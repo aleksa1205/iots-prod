@@ -19,7 +19,8 @@ services:
       PORT: 5500
       HOST: data_manager
       BROKER: mqtt:1883
-      CLIENT_ID: data_manager_dev
+      CLIENT_ID: ${DATA_MANAGER_CLIENT_ID}
+      TOPIC: ${DATA_MANAGER_TOPIC}
     depends_on:
       - database
 
