@@ -7,7 +7,7 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-func CreateMQTTClient(broker, clientId string) (mqtt.Client, error) {
+func CreateMQTTClient(broker string, clientId string) (mqtt.Client, error) {
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(broker)
 	opts.SetClientID(clientId)
@@ -17,7 +17,7 @@ func CreateMQTTClient(broker, clientId string) (mqtt.Client, error) {
 
 	client := mqtt.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		return nil, token.Error()
+		return nil, fmt.Errorf("Failed to connect to MQTT broker %s: %w", broker, token.Error())
 	}
 
 	fmt.Println("Connect to the MQTT broker")

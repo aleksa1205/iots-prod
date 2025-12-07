@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"context"
+	"data-manager/internal/dtos"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/services"
-	"data-manager/internal/services/dtos"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -17,13 +17,13 @@ import (
 
 type SensorReadingHandler struct {
 	sensorpb.UnimplementedSensorReadingServiceServer
-	service *services.SensorReadingService
+	service services.SensorReadingServiceInterface
 	broker  mqtt.Client
 }
 
 var _ sensorpb.SensorReadingServiceServer = (*SensorReadingHandler)(nil)
 
-func NewSensorReadingHandler(service *services.SensorReadingService, broker mqtt.Client) *SensorReadingHandler {
+func NewSensorReadingHandler(service services.SensorReadingServiceInterface, broker mqtt.Client) *SensorReadingHandler {
 	return &SensorReadingHandler{
 		UnimplementedSensorReadingServiceServer: sensorpb.UnimplementedSensorReadingServiceServer{},
 		service:                                 service,

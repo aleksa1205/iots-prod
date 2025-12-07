@@ -2,10 +2,12 @@ package main
 
 import (
 	"data-manager/internal/config"
+	"data-manager/internal/entities"
 	"data-manager/internal/handlers"
 	lmqtt "data-manager/internal/mqtt"
 	sensorpb "data-manager/internal/proto"
-	infrastructure "data-manager/internal/repositories"
+	"data-manager/internal/repositories"
+	db2 "data-manager/internal/repositories/db"
 	"data-manager/internal/services"
 	"database/sql"
 	"log"
@@ -32,41 +34,47 @@ func InitServer() net.Listener {
 	return listen
 }
 
-func DbConnect() (*gorm.DB, *sql.DB) {
+func InitDb() (*gorm.DB, *sql.DB) {
 	connectionString := config.GetEnvOrPanic(config.EnvKeys.DatabaseConnectionString)
 
-	db, err := infrastructure.ConnectToDatabase(connectionString)
+	db, err := db2.Connect(connectionString)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
 	sqlDb, err := db.DB()
 	if err != nil {
-		log.Fatalf("Failed to get raw database: %v", err)
+		log.Fatalf("Failed to get database handle: %v", err)
+	}
+
+	if err := db.AutoMigrate(&entities.SensorReading{}); err != nil {
+		log.Fatalf("Migration failed: %v", err)
 	}
 
 	return db, sqlDb
 }
 
-func MqqtClient() (mqtt.Client, error) {
+func InitMqttClient() (mqtt.Client, error) {
 	broker := config.GetEnvOrPanic(config.EnvKeys.Broker)
 	clientId := config.GetEnvOrPanic(config.EnvKeys.ClientId)
-
 	return lmqtt.CreateMQTTClient(broker, clientId)
 }
 
 func main() {
 	lis := InitServer()
-	db, sqlDb := DbConnect()
+	db, sqlDb := InitDb()
 	defer sqlDb.Close()
 
-	repository := infrastructure.NewSensorReadingRepository(db)
+	repository := repositories.NewSensorReadingRepository(db)
 	service := services.NewSensorReadingService(repository)
+
 	server := grpc.NewServer()
-	broker, err := MqqtClient()
+
+	broker, err := InitMqttClient()
 	if err != nil {
-		log.Fatalf("Failed to connect to mqtt client: %v", err)
+		log.Fatalf("Failed to connect to MQTT client: %v", err)
 	}
+
 	handler := handlers.NewSensorReadingHandler(service, broker)
 	sensorpb.RegisterSensorReadingServiceServer(server, handler)
 

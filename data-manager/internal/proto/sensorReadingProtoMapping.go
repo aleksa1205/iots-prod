@@ -1,8 +1,8 @@
 package sensorpb
 
 import (
+	"data-manager/internal/dtos"
 	"data-manager/internal/entities"
-	"data-manager/internal/services/dtos"
 )
 
 func (r *CreateSensorReadingRequest) ToRequest() *dtos.SensorReadingRequest {
