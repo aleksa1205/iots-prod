@@ -5,6 +5,8 @@ type EnvironmentVariableKeys struct {
 	DatabaseConnectionString string
 	Port                     string
 	Host                     string
+	Broker                   string
+	ClientId                 string
 }
 
 var EnvKeys = EnvironmentVariableKeys{
@@ -12,4 +14,6 @@ var EnvKeys = EnvironmentVariableKeys{
 	DatabaseConnectionString: "DB_CONNECTION_STRING",
 	Host:                     "HOST",
 	Port:                     "PORT",
+	Broker:                   "BROKER",
+	ClientId:                 "CLIENT_ID",
 }

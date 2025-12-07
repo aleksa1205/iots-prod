@@ -18,6 +18,8 @@ services:
       DB_CONNECTION_STRING: host=database user=${POSTGRES_DB_USER} password=${POSTGRES_DB_PASSWORD} dbname=${POSTGRES_DB_NAME} port=5432 sslmode=disable
       PORT: 5500
       HOST: data_manager
+      BROKER: mqtt:1883
+      CLIENT_ID: data_manager_dev
     depends_on:
       - database
 

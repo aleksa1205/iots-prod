@@ -3,6 +3,7 @@ package main
 import (
 	"data-manager/internal/config"
 	"data-manager/internal/handlers"
+	lmqtt "data-manager/internal/mqtt"
 	sensorpb "data-manager/internal/proto"
 	infrastructure "data-manager/internal/repositories"
 	"data-manager/internal/services"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"net"
 
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
@@ -46,6 +48,13 @@ func DbConnect() (*gorm.DB, *sql.DB) {
 	return db, sqlDb
 }
 
+func MqqtClient() (mqtt.Client, error) {
+	broker := config.GetEnvOrPanic(config.EnvKeys.Broker)
+	clientId := config.GetEnvOrPanic(config.EnvKeys.ClientId)
+
+	return lmqtt.CreateMQTTClient(broker, clientId)
+}
+
 func main() {
 	lis := InitServer()
 	db, sqlDb := DbConnect()
@@ -54,7 +63,11 @@ func main() {
 	repository := infrastructure.NewSensorReadingRepository(db)
 	service := services.NewSensorReadingService(repository)
 	server := grpc.NewServer()
-	handler := handlers.NewSensorReadingHandler(service)
+	broker, err := MqqtClient()
+	if err != nil {
+		log.Fatalf("Failed to connect to mqtt client: %v", err)
+	}
+	handler := handlers.NewSensorReadingHandler(service, broker)
 	sensorpb.RegisterSensorReadingServiceServer(server, handler)
 
 	log.Println("Starting server...")
