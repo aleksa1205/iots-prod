@@ -67,3 +67,20 @@ services:
       - ./mqtt/data:/mosquitto/data:rw
       - ./mqtt/log:/mosquitto/log:rw
     restart: unless-stopped
+
+  event_manager:
+    build: ./event-manager
+    container_name: event_manager
+    ports:
+      - ${EVENT_MANAGER_PORT}:5500
+    environment:
+      HOST: event_manager
+      PORT: ${EVENT_MANAGER_PORT}
+      BROKER: mqtt:1883
+      CLIENT_ID: ${EVENT_MANAGER_CLIENT_ID}
+      RECV_TOPIC: ${DATA_MANAGER_TOPIC}
+      SEND_TOPIC: ${EVENT_MANAGER_TOPIC}
+      USED_THRESHOLD: ${EVENT_MANAGER_USED_THRESHOLD}
+      GEN_THRESHOLD: ${EVENT_MANAGER_GEN_THRESHOLD}
+    depends_on:
+      - mqtt
