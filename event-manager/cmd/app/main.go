@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/joho/godotenv"
 )
 
 func StartServer() {
@@ -25,9 +26,9 @@ func InitMqttClient() (mqtt.Client, error) {
 }
 
 func main() {
-	//if err := godotenv.Load(".env"); err != nil {
-	//	log.Fatalf("Error loading .env file: %v", err)
-	//}
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
 
 	_, err := InitMqttClient()
 	if err != nil {

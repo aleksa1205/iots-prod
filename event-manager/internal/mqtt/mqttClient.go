@@ -27,7 +27,7 @@ func CreateMQTTClient(broker string, clientId string) (mqtt.Client, error) {
 
 	receiveMessage(client)
 
-	fmt.Println("Connect to the MQTT broker")
+	log.Printf("Connect to the MQTT broker")
 	return client, nil
 }
 
@@ -52,7 +52,7 @@ func receiveMessage(client mqtt.Client) {
 		if err != nil {
 			log.Printf("Error unmarshalling received data: %s", err)
 		}
-		fmt.Println("Received data from topic %s: %v", recv_topic, reading)
+		log.Printf("Received data from topic %s: %v", recv_topic, reading)
 
 		if reading.GeneratedKW > gen_threshold || reading.UsedKW > used_threshold {
 			err := publishToTopic(client, send_topic, reading)
