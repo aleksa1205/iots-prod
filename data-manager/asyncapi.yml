@@ -1,9 +1,28 @@
 asyncapi: 3.0.0
 info:
-  title: Data Manager API
+  title: Sensor Reading Data Manager API
   version: "1.0.0"
-  description: "Simple IoT system Data Manager service API"
+  description: AsyncAPI spec for DataManager MQTT messages
 servers:
-  emqx:
+  mosquitto:
     url: localhost:1883
     protocol: mqtt
+channels:
+  sensorReading/data/raw:
+    publish:
+      summary: Channel for raw sensor data readings
+      operationId: receiveRawSensorData
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            id:
+              type: uuid
+              description: Unique identifier for the sensor
+            usedKw:
+              type: double
+              description: Energy used in KW
+            generatedKw:
+              type: double
+              description: Energy generated in KW

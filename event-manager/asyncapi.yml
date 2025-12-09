@@ -1,0 +1,56 @@
+asyncapi: 3.0.0
+info:
+  title: Sensor Reading Event Manager API
+  version: "1.0.0"
+  description: AsyncAPI spec for EventManager MQTT messages
+servers:
+  mosquitto:
+    url: localhost:1883
+    protocol: mqtt
+channels:
+  sensorReading/data/raw:
+    subscribe:
+      summary: Channel for raw sensor data readings
+      operationId: receiveRawSensorData
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            id:
+              type: uuid
+              description: Unique identifier for the sensor
+            usedKw:
+              type: double
+              description: Energy used in KW
+            generatedKw:
+              type: double
+              description: Energy generated in KW
+  sensorReading/data/processed:
+    publish:
+      summary: Channel for processed sensor data readings
+      operationId: sendProcessedSensorData
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            type:
+              type: string
+              descirption: Type of the message (e.g., alert, info)
+            time:
+              type: long
+              format: unix-time
+              description: Timestamp of the message sent.
+            reading:
+              type: object
+              properties:
+                id:
+                  type: uuid
+                  description: Unique identifier for the sensor
+                usedKw:
+                  type: double
+                  description: Energy used in KW
+                generatedKw:
+                  type: double
+                  description: Energy generated in KW
