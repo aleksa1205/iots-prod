@@ -1,0 +1,9 @@
+asyncapi: 3.0.0
+info:
+  title: Data Manager API
+  version: "1.0.0"
+  description: "Simple IoT system Data Manager service API"
+servers:
+  emqx:
+    url: localhost:1883
+    protocol: mqtt

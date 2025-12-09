@@ -4,6 +4,7 @@ import (
 	"context"
 	"data-manager/internal/dtos"
 	domain "data-manager/internal/entities"
+	lmqtt "data-manager/internal/mqtt"
 	"data-manager/internal/repositories"
 	"encoding/json"
 	"errors"
@@ -93,7 +94,7 @@ func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorR
 		return nil, status.Errorf(codes.Internal, "SensorReadingService/Create: Creating sensor reading failed\nError: %w", err)
 	}
 
-	err = s.publishToTopic(sensor)
+	err = s.publishSensorReadingToTopic(sensor)
 	if err != nil {
 		fmt.Printf("SensorReadingService/Create: Publishing sensor reading failed\nError: %w", err)
 	}
@@ -137,17 +138,13 @@ func (s *SensorReadingService) mustExist(ctx context.Context, id string) (entity
 	return sensor, nil
 }
 
-func (s *SensorReadingService) publishToTopic(sensor *domain.SensorReading) error {
+func (s *SensorReadingService) publishSensorReadingToTopic(sensor *domain.SensorReading) error {
 	payload, err := json.Marshal(dtos.ToOverview(sensor))
 	if err != nil {
 		return err
 	}
 
-	token := s.broker.Publish(s.topic, 2, false, payload)
-	if token.Wait() && token.Error() != nil {
-		return token.Error()
-	}
-	return nil
+	return lmqtt.PublishToTopic(s.broker, s.topic, payload)
 }
 
 var _ SensorReadingServiceInterface = (*SensorReadingService)(nil)

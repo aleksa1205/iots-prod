@@ -23,3 +23,11 @@ func CreateMQTTClient(broker string, clientId string) (mqtt.Client, error) {
 	fmt.Println("Connect to the MQTT broker")
 	return client, nil
 }
+
+func PublishToTopic(client mqtt.Client, topic string, payload []byte) error {
+	token := client.Publish(topic, 2, false, payload)
+	if token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+	return nil
+}
