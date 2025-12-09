@@ -84,3 +84,17 @@ services:
       GEN_THRESHOLD: ${EVENT_MANAGER_GEN_THRESHOLD}
     depends_on:
       - mqtt
+
+  mqtt_client:
+    build: ./mqtt-client
+    container_name: mqtt_client
+    ports:
+      - 7345:5500
+    environment:
+      HOST: mqtt_client
+      PORT: 7345
+      BROKER: mqtt:1883
+      CLIENT_ID: mqtt_client
+      TOPIC: ${EVENT_MANAGER_TOPIC}
+    depends_on:
+      - mqtt

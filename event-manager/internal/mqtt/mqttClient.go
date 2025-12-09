@@ -25,13 +25,11 @@ func CreateMQTTClient(broker string, clientId string) (mqtt.Client, error) {
 		return nil, fmt.Errorf("Failed to connect to MQTT broker %s: %w", broker, token.Error())
 	}
 
-	receiveMessage(client)
-
 	log.Printf("Connect to the MQTT broker")
 	return client, nil
 }
 
-func receiveMessage(client mqtt.Client) {
+func ReceiveMessage(client mqtt.Client) {
 	gen_threshold, err := strconv.ParseFloat(config.GetEnvOrPanic(config.EnvKeys.GenThreshold), 64)
 	if err != nil {
 		log.Printf("Invalid %s using default: %v", config.EnvKeys.GenThreshold, err)
@@ -52,7 +50,7 @@ func receiveMessage(client mqtt.Client) {
 		if err != nil {
 			log.Printf("Error unmarshalling received data: %s", err)
 		}
-		log.Printf("Received data from topic %s: %v", recv_topic, reading)
+		log.Printf("Received data from topic %s: %+v", recv_topic, reading)
 
 		if reading.GeneratedKW > gen_threshold || reading.UsedKW > used_threshold {
 			err := publishToTopic(client, send_topic, reading)

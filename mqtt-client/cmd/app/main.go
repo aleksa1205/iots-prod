@@ -1,9 +1,9 @@
 package main
 
 import (
-	"event-manager/internal/config"
-	lmqtt "event-manager/internal/mqtt"
 	"log"
+	"mqqt-client/internal/config"
+	lmqtt "mqqt-client/internal/mqtt"
 	"net/http"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
