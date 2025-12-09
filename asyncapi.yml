@@ -1,5 +1,0 @@
-asyncapi: 3.0.0
-info:
-  title: IoT System API
-  version: "1.0.0"
-servers:
