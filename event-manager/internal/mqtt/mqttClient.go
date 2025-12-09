@@ -30,44 +30,43 @@ func CreateMQTTClient(broker string, clientId string) (mqtt.Client, error) {
 }
 
 func ReceiveMessage(client mqtt.Client) {
-	gen_threshold, err := strconv.ParseFloat(config.GetEnvOrPanic(config.EnvKeys.GenThreshold), 64)
+	genThreshold, err := strconv.ParseFloat(config.GetEnvOrPanic(config.EnvKeys.GenThreshold), 64)
 	if err != nil {
 		log.Printf("Invalid %s using default: %v", config.EnvKeys.GenThreshold, err)
-		gen_threshold = 0
+		genThreshold = 0
 	}
 
-	used_threshold, err := strconv.ParseFloat(config.GetEnvOrPanic(config.EnvKeys.UsedThreshold), 64)
+	usedThreshold, err := strconv.ParseFloat(config.GetEnvOrPanic(config.EnvKeys.UsedThreshold), 64)
 	if err != nil {
 		log.Printf("Invalid %s using default: %v", config.EnvKeys.GenThreshold, err)
-		used_threshold = 0
+		usedThreshold = 0
 	}
 
-	recv_topic := config.GetEnvOrPanic(config.EnvKeys.ReceiveTopic)
-	send_topic := config.GetEnvOrPanic(config.EnvKeys.SendTopic)
-	client.Subscribe(recv_topic, 1, func(client mqtt.Client, msg mqtt.Message) {
+	recvTopic := config.GetEnvOrPanic(config.EnvKeys.ReceiveTopic)
+	sendTopic := config.GetEnvOrPanic(config.EnvKeys.SendTopic)
+	client.Subscribe(recvTopic, 1, func(client mqtt.Client, msg mqtt.Message) {
 		var reading dtos.SensorReadingOverview
 		err := json.Unmarshal(msg.Payload(), &reading)
 		if err != nil {
 			log.Printf("Error unmarshalling received data: %s", err)
 		}
-		log.Printf("Received data from topic %s: %+v", recv_topic, reading)
+		log.Printf("Received data from topic %s: %+v", recvTopic, reading)
 
-		if reading.GeneratedKW > gen_threshold || reading.UsedKW > used_threshold {
-			err := publishToTopic(client, send_topic, reading)
+		if reading.GeneratedKW > genThreshold || reading.UsedKW > usedThreshold {
+			alert := dtos.CreateSensorReadingAlert(reading)
+			payload, err := json.Marshal(&alert)
 			if err != nil {
-				log.Printf("Error publishing to topic %s: %v", send_topic, err)
+				log.Printf("Error marshalling received data: %s", err)
+			}
+			err = publishToTopic(client, sendTopic, payload)
+			if err != nil {
+				log.Printf("Error publishing to topic %s: %v", sendTopic, err)
 			}
 		}
 	})
 }
 
-func publishToTopic(client mqtt.Client, topic string, event any) error {
-	payload, err := json.Marshal(event)
-	if err != nil {
-		log.Printf("Error marshalling event: %s", err)
-		return err
-	}
-
+func publishToTopic(client mqtt.Client, topic string, payload []byte) error {
 	token := client.Publish(topic, 1, false, payload)
 	if token.Wait() && token.Error() != nil {
 		return token.Error()

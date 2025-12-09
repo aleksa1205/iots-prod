@@ -17,7 +17,7 @@ services:
     environment:
       DB_CONNECTION_STRING: host=database user=${POSTGRES_DB_USER} password=${POSTGRES_DB_PASSWORD} dbname=${POSTGRES_DB_NAME} port=5432 sslmode=disable
       PORT: 5500
-      HOST: data_manager
+      HOST: 0.0.0.0
       BROKER: mqtt:1883
       CLIENT_ID: ${DATA_MANAGER_CLIENT_ID}
       TOPIC: ${DATA_MANAGER_TOPIC}
@@ -74,7 +74,7 @@ services:
     ports:
       - ${EVENT_MANAGER_PORT}:5500
     environment:
-      HOST: event_manager
+      HOST: 0.0.0.0
       PORT: ${EVENT_MANAGER_PORT}
       BROKER: mqtt:1883
       CLIENT_ID: ${EVENT_MANAGER_CLIENT_ID}
@@ -89,12 +89,12 @@ services:
     build: ./mqtt-client
     container_name: mqtt_client
     ports:
-      - 7345:5500
+      - ${MQTT_CLIENT_PORT}:5500
     environment:
-      HOST: mqtt_client
-      PORT: 7345
+      HOST: 0.0.0.0
+      PORT: ${MQTT_CLIENT_PORT}
       BROKER: mqtt:1883
-      CLIENT_ID: mqtt_client
+      CLIENT_ID: ${MQTT_CLIENT_CLIENT_ID}
       TOPIC: ${EVENT_MANAGER_TOPIC}
     depends_on:
       - mqtt

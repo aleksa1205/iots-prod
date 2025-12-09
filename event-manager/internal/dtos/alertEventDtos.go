@@ -8,7 +8,7 @@ type AlterEvent struct {
 	Reading SensorReadingOverview
 }
 
-func CreateAlertEvent(reading SensorReadingOverview) AlterEvent {
+func CreateSensorReadingAlert(reading SensorReadingOverview) AlterEvent {
 	return AlterEvent{
 		Type:    "SENSOR READING ALERT",
 		Time:    time.Now().Unix(),
