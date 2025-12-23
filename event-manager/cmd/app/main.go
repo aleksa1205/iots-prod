@@ -51,7 +51,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("Analytics service started ...")
+	log.Println("Event manager service started ...")
 
 	<-ctx.Done()
 	log.Println("Shutting down...")
