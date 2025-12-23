@@ -98,3 +98,16 @@ services:
       TOPIC: sensorReading/data/processed
     depends_on:
       - mqtt
+
+  analytics:
+    build: ./analytics
+    container_name: analytics
+    ports:
+      - ${ANALYTICS_PORT}:5500
+    environment:
+      BROKER: mqtt:1883
+      CLIENT_ID: ${ANALYTICS_CLIENT_ID}
+      RECEIVE_TOPIC: sensorReading/data/processed
+      PUBLISH_TOPIC: sensorReading/analytics
+    depends_on:
+      - mqtt
