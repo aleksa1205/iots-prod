@@ -109,3 +109,9 @@ services:
       PUBLISH_TOPIC: sensorReading/analytics
     depends_on:
       - mqtt
+
+  mlaas:
+    build: ./mlaas
+    container_name: mlaas
+    ports:
+      - ${MLAAS_PORT}:8080
