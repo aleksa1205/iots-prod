@@ -21,6 +21,3 @@ def predict(request: PredictRequest) -> PredictResponse:
     past_values = request.past_values
     predicted_avg = model.predict([past_values])[0]
     return {"prediction": predicted_avg}
-
-# to run this app run uvicorn main:app --reload
-# and to open swagger go to url/docs
