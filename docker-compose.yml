@@ -107,6 +107,7 @@ services:
       CLIENT_ID: ${ANALYTICS_CLIENT_ID}
       RECEIVE_TOPIC: sensorReading/data/raw
       PUBLISH_TOPIC: sensorReading/analytics
+      MLAASURL: http://mlaas:8080
     depends_on:
       - mqtt
 

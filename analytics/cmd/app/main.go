@@ -38,6 +38,8 @@ func main() {
 		ClientId:     cfg.ClientId,
 		ReceiveTopic: cfg.ReceiveTopic,
 		Qos:          1,
+		MlaaSUrl:     cfg.MLaasUrl,
+		BufferSize:   20,
 	})
 	if err != nil {
 		log.Fatal(err)

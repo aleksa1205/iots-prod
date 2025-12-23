@@ -2,10 +2,13 @@ package mqtt
 
 import (
 	"analytics/internal/dtos"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
+	"sync"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -16,12 +19,18 @@ type ConfigMqtt struct {
 	ClientId     string
 	ReceiveTopic string
 	Qos          byte
+	MlaaSUrl     string
+	BufferSize   int
 }
 
 type SensorMqttClient struct {
 	client       mqtt.Client
 	receiveTopic string
 	qos          byte
+	buffer       []float64
+	bufferSize   int
+	mutex        sync.Mutex
+	mlaasUrl     string
 }
 
 func CreateMQTTClient(ctx context.Context, cfg *ConfigMqtt) (*SensorMqttClient, error) {
@@ -60,11 +69,13 @@ func CreateMQTTClient(ctx context.Context, cfg *ConfigMqtt) (*SensorMqttClient, 
 		client:       client,
 		receiveTopic: receiveTopic,
 		qos:          qos,
+		mlaasUrl:     cfg.MlaaSUrl,
+		bufferSize:   cfg.BufferSize,
 	}, nil
 }
 
 func (c *SensorMqttClient) Subscribe() error {
-	token := c.client.Subscribe(c.receiveTopic, c.qos, c.receiveMessage)
+	token := c.client.Subscribe(c.receiveTopic, c.qos, c.handleMessage)
 
 	if token.Wait() && token.Error() != nil {
 		return fmt.Errorf("failed to subscribe to topic %s: %w", c.receiveTopic, token.Error())
@@ -74,11 +85,57 @@ func (c *SensorMqttClient) Subscribe() error {
 	return nil
 }
 
-func (c *SensorMqttClient) receiveMessage(_ mqtt.Client, msg mqtt.Message) {
+func (c *SensorMqttClient) handleMessage(client mqtt.Client, msg mqtt.Message) {
+	reading, err := c.receiveMessage(client, msg)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	c.mutex.Lock()
+	c.buffer = append(c.buffer, reading.UsedKW)
+	if len(c.buffer) > c.bufferSize {
+		batch := c.buffer[:c.bufferSize]
+		c.buffer = c.buffer[c.bufferSize:]
+		go c.sendToMLaaS(batch)
+	}
+	c.mutex.Unlock()
+}
+
+func (c *SensorMqttClient) receiveMessage(_ mqtt.Client, msg mqtt.Message) (dtos.SensorReadingOverview, error) {
 	var reading dtos.SensorReadingOverview
 	err := json.Unmarshal(msg.Payload(), &reading)
 	if err != nil {
-		log.Printf("Error unmarshalling message: topic: %s payload: %s, err: %v", msg.Topic(), msg.Payload(), err)
+		return dtos.SensorReadingOverview{}, fmt.Errorf("error unmarshalling message: topic: %s payload: %s, err: %v", msg.Topic(), msg.Payload(), err)
 	}
 	log.Printf("%+v", reading)
+	return reading, nil
+}
+
+func (c *SensorMqttClient) sendToMLaaS(batch []float64) {
+	reqBody := map[string]interface{}{
+		"past_values": batch, // just UsedKW values
+	}
+
+	data, err := json.Marshal(reqBody)
+	if err != nil {
+		log.Println("MLaaS request failed: ", err)
+		return
+	}
+
+	resp, err := http.Post(c.mlaasUrl+"/predict", "application/json", bytes.NewBuffer(data))
+	if err != nil {
+		log.Println("MLaaS request failed: ", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	var result struct {
+		Prediction float64 `json:"prediction"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		log.Println("Failed to decode MLaaS response:", err)
+		return
+	}
+	log.Printf("Analytics prediction for batch: %f", result.Prediction)
 }
