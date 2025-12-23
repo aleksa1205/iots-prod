@@ -74,12 +74,10 @@ services:
     ports:
       - ${EVENT_MANAGER_PORT}:5500
     environment:
-      HOST: 0.0.0.0
-      PORT: ${EVENT_MANAGER_PORT}
       BROKER: mqtt:1883
       CLIENT_ID: ${EVENT_MANAGER_CLIENT_ID}
-      RECV_TOPIC: sensorReading/data/raw
-      SEND_TOPIC: sensorReading/data/processed
+      RECEIVE_TOPIC: sensorReading/data/raw
+      PUBLISH_TOPIC: sensorReading/data/processed
       USED_THRESHOLD: ${EVENT_MANAGER_USED_THRESHOLD}
       GEN_THRESHOLD: ${EVENT_MANAGER_GEN_THRESHOLD}
     depends_on:
@@ -107,7 +105,7 @@ services:
     environment:
       BROKER: mqtt:1883
       CLIENT_ID: ${ANALYTICS_CLIENT_ID}
-      RECEIVE_TOPIC: sensorReading/data/processed
+      RECEIVE_TOPIC: sensorReading/data/raw
       PUBLISH_TOPIC: sensorReading/analytics
     depends_on:
       - mqtt

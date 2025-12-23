@@ -1,75 +1,144 @@
 package mqtt
 
 import (
+	"context"
 	"encoding/json"
-	"event-manager/internal/config"
 	"event-manager/internal/dtos"
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-func CreateMQTTClient(broker string, clientId string) (mqtt.Client, error) {
+type ConfigMqtt struct {
+	Broker        string
+	ClientId      string
+	ReceiveTopic  string
+	PublishTopic  string
+	Qos           byte
+	GenThreshold  float64
+	UsedThreshold float64
+}
+
+type SensorMqttClient struct {
+	client       mqtt.Client
+	receiveTopic string
+	publishTopic string
+	qos          byte
+	threshold    dtos.EventThreshold
+}
+
+func CreateMQTTClient(ctx context.Context, cfg *ConfigMqtt) (*SensorMqttClient, error) {
+	broker := cfg.Broker
+	clientId := cfg.ClientId
+
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(broker)
 	opts.SetClientID(clientId)
 	opts.SetKeepAlive(60 * time.Second)
 	opts.SetPingTimeout(1 * time.Second)
 	opts.SetAutoReconnect(true)
+	opts.OnConnect = func(client mqtt.Client) {
+		log.Printf("Connected to MQTT broker %s", broker)
+	}
+	opts.OnConnectionLost = func(client mqtt.Client, err error) {
+		log.Printf("Disconnected from MQTT broker %s %v", broker, err)
+	}
 
 	client := mqtt.NewClient(opts)
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		return nil, fmt.Errorf("Failed to connect to MQTT broker %s: %w", broker, token.Error())
+		return nil, fmt.Errorf("failed to connect to MQTT broker %s: %w", broker, token.Error())
 	}
 
-	log.Printf("Connect to the MQTT broker")
-	return client, nil
+	go func() {
+		<-ctx.Done()
+		if client.IsConnected() {
+			log.Println("Context canceled — disconnecting MQTT client")
+			client.Disconnect(250)
+		}
+	}()
+
+	return &SensorMqttClient{
+		client:       client,
+		publishTopic: cfg.PublishTopic,
+		receiveTopic: cfg.ReceiveTopic,
+		qos:          cfg.Qos,
+		threshold: dtos.EventThreshold{
+			GenerateKw: cfg.GenThreshold,
+			UsedKw:     cfg.UsedThreshold,
+		},
+	}, nil
 }
 
-func ReceiveMessage(client mqtt.Client) {
-	genThreshold, err := strconv.ParseFloat(config.GetEnvOrPanic(config.EnvKeys.GenThreshold), 64)
-	if err != nil {
-		log.Printf("Invalid %s using default: %v", config.EnvKeys.GenThreshold, err)
-		genThreshold = 0
+func (c *SensorMqttClient) Subscribe() error {
+	token := c.client.Subscribe(c.receiveTopic, c.qos, c.handleMessage)
+
+	if token.Wait() && token.Error() != nil {
+		return fmt.Errorf("failed to subscribe to topic %s: %w", c.receiveTopic, token.Error())
 	}
 
-	usedThreshold, err := strconv.ParseFloat(config.GetEnvOrPanic(config.EnvKeys.UsedThreshold), 64)
-	if err != nil {
-		log.Printf("Invalid %s using default: %v", config.EnvKeys.GenThreshold, err)
-		usedThreshold = 0
-	}
-
-	recvTopic := config.GetEnvOrPanic(config.EnvKeys.ReceiveTopic)
-	sendTopic := config.GetEnvOrPanic(config.EnvKeys.SendTopic)
-	client.Subscribe(recvTopic, 1, func(client mqtt.Client, msg mqtt.Message) {
-		var reading dtos.SensorReadingOverview
-		err := json.Unmarshal(msg.Payload(), &reading)
-		if err != nil {
-			log.Printf("Error unmarshalling received data: %s", err)
-		}
-		log.Printf("Received data from topic %s: %+v", recvTopic, reading)
-
-		if reading.GeneratedKW > genThreshold || reading.UsedKW > usedThreshold {
-			alert := dtos.CreateSensorReadingAlert(reading)
-			payload, err := json.Marshal(&alert)
-			if err != nil {
-				log.Printf("Error marshalling received data: %s", err)
-			}
-			err = publishToTopic(client, sendTopic, payload)
-			if err != nil {
-				log.Printf("Error publishing to topic %s: %v", sendTopic, err)
-			}
-		}
-	})
+	log.Printf("Subscribed to topic %s", c.receiveTopic)
+	return nil
 }
 
-func publishToTopic(client mqtt.Client, topic string, payload []byte) error {
-	token := client.Publish(topic, 1, false, payload)
+func (c *SensorMqttClient) Publish(payload []byte) error {
+	token := c.client.Publish(c.publishTopic, c.qos, false, payload)
 	if token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
 	return nil
+}
+
+func (c *SensorMqttClient) handleMessage(client mqtt.Client, msg mqtt.Message) {
+	reading, err := c.receiveMessage(client, msg)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	events, detected := c.detectEvent(reading)
+	if !detected {
+		return
+	}
+
+	for _, event := range events {
+		payload, err := json.Marshal(event)
+		if err != nil {
+			log.Println("Failed to marshal event:", err)
+			continue
+		}
+		if err := c.Publish(payload); err != nil {
+			log.Println("Failed to publish event:", err)
+		}
+	}
+}
+
+func (c *SensorMqttClient) receiveMessage(_ mqtt.Client, msg mqtt.Message) (dtos.SensorReadingOverview, error) {
+	var reading dtos.SensorReadingOverview
+	err := json.Unmarshal(msg.Payload(), &reading)
+	if err != nil {
+		return dtos.SensorReadingOverview{}, fmt.Errorf("error unmarshalling message: topic: %s payload: %s, err: %v", msg.Topic(), msg.Payload(), err)
+
+	}
+	log.Printf("%+v", reading)
+	return reading, nil
+}
+
+func (c *SensorMqttClient) detectEvent(reading dtos.SensorReadingOverview) ([]dtos.AlertEvent, bool) {
+	events := make([]dtos.AlertEvent, 0, 2)
+
+	if reading.GeneratedKW > c.threshold.GenerateKw {
+		events = append(events, dtos.CreateSensorReadingAlert(reading, dtos.GenerateOverflow))
+	}
+
+	if reading.UsedKW > c.threshold.UsedKw {
+		events = append(events, dtos.CreateSensorReadingAlert(reading, dtos.UsedOverflow))
+	}
+
+	if len(events) == 0 {
+		return nil, false
+	}
+
+	return events, true
 }

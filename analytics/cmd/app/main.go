@@ -20,11 +20,7 @@ func loadEnv() {
 
 func main() {
 	loadEnv()
-
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
+	cfg := config.LoadConfig()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

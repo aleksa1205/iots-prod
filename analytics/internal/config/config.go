@@ -7,13 +7,11 @@ type Config struct {
 	ReceiveTopic string
 }
 
-func LoadConfig() (*Config, error) {
-	cfg := &Config{
+func LoadConfig() (*Config) {
+	return &Config{
 		Broker:       GetEnvOrPanic(EnvKeys.Broker),
 		PublishTopic: GetEnvOrPanic(EnvKeys.PublishTopic),
 		ReceiveTopic: GetEnvOrPanic(EnvKeys.ReceiveTopic),
 		ClientId:     GetEnvOrPanic(EnvKeys.ClientId),
 	}
-
-	return cfg, nil
 }

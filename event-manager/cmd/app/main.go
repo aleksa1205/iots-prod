@@ -1,43 +1,58 @@
 package main
 
 import (
+	"context"
 	"event-manager/internal/config"
 	lmqtt "event-manager/internal/mqtt"
 	"log"
-	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/joho/godotenv"
 )
 
-func StartServer() {
-	address := config.GetEnvOrPanic(config.EnvKeys.Host) + ":" + config.GetEnvOrPanic(config.EnvKeys.Port)
-	err := http.ListenAndServe(address, nil)
-	if err != nil {
-		log.Fatal(err)
+func loadEnv() {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Println("No .env file found, using system environment variables")
 	}
-	log.Println("Listening on " + address)
-}
-
-func InitMqttClient() (mqtt.Client, error) {
-	broker := config.GetEnvOrPanic(config.EnvKeys.Broker)
-	clientId := config.GetEnvOrPanic(config.EnvKeys.ClientId)
-	return lmqtt.CreateMQTTClient(broker, clientId)
 }
 
 func main() {
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
-	}
+	loadEnv()
+	cfg := config.LoadConfig()
 
-	go StartServer()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	client, err := InitMqttClient()
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-signalChan
+		log.Println("Terminal signal received")
+		cancel()
+	}()
+
+	client, err := lmqtt.CreateMQTTClient(ctx, &lmqtt.ConfigMqtt{
+		Broker:        cfg.Broker,
+		ClientId:      cfg.ClientId,
+		GenThreshold:  cfg.GenThreshold,
+		UsedThreshold: cfg.UsedThreshold,
+		Qos:           1,
+		ReceiveTopic:  cfg.ReceiveTopic,
+		PublishTopic:  cfg.PublishTopic,
+	})
 	if err != nil {
-		log.Fatalf("Failed to connect to MQTT client: %v", err)
+		log.Fatal(err)
 	}
 
-	lmqtt.ReceiveMessage(client)
+	err = client.Subscribe()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	select {}
+	log.Println("Analytics service started ...")
+
+	<-ctx.Done()
+	log.Println("Shutting down...")
 }
