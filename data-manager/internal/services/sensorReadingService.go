@@ -9,8 +9,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
@@ -18,11 +18,11 @@ import (
 
 type SensorReadingService struct {
 	repository repositories.SensorReadingRepository
-	broker     mqtt.Client
+	broker     *lmqtt.SensorMqttClient
 	topic      string
 }
 
-func NewSensorReadingService(repository repositories.SensorReadingRepository, broker mqtt.Client, topic string) SensorReadingServiceInterface {
+func NewSensorReadingService(repository repositories.SensorReadingRepository, broker *lmqtt.SensorMqttClient, topic string) SensorReadingServiceInterface {
 	return &SensorReadingService{repository: repository, broker: broker, topic: topic}
 }
 
@@ -141,10 +141,10 @@ func (s *SensorReadingService) mustExist(ctx context.Context, id string) (entity
 func (s *SensorReadingService) publishSensorReadingToTopic(sensor *domain.SensorReading) error {
 	payload, err := json.Marshal(dtos.ToOverview(sensor))
 	if err != nil {
-		return err
+		log.Println("Failed to marshal to overview:", err)
 	}
 
-	return lmqtt.PublishToTopic(s.broker, s.topic, payload)
+	return s.broker.Publish(payload)
 }
 
 var _ SensorReadingServiceInterface = (*SensorReadingService)(nil)

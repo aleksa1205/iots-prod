@@ -1,43 +1,36 @@
 package main
 
 import (
+	"context"
 	"data-manager/internal/config"
 	"data-manager/internal/entities"
 	"data-manager/internal/handlers"
 	lmqtt "data-manager/internal/mqtt"
 	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/repositories"
-	db2 "data-manager/internal/repositories/db"
+	ldb "data-manager/internal/repositories/db"
 	"data-manager/internal/services"
 	"database/sql"
+	"errors"
 	"log"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"gorm.io/gorm"
 )
 
-func InitServer() net.Listener {
+func loadEnv() {
 	if err := godotenv.Load(".env"); err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		log.Println("No .env file found, using system environment variables")
 	}
-
-	address := config.GetEnvOrPanic(config.EnvKeys.Host) + ":" + config.GetEnvOrPanic(config.EnvKeys.Port)
-	listen, err := net.Listen("tcp", address)
-	if err != nil {
-		log.Fatalf("Error listening for tcp connections on %v: %v", address, err)
-	}
-	log.Println("Listening on " + address)
-
-	return listen
 }
 
-func InitDb() (*gorm.DB, *sql.DB) {
-	connectionString := config.GetEnvOrPanic(config.EnvKeys.DatabaseConnectionString)
-
-	db, err := db2.Connect(connectionString)
+func initDb(connectionString string) (*gorm.DB, *sql.DB) {
+	db, err := ldb.Connect(connectionString)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
@@ -54,33 +47,54 @@ func InitDb() (*gorm.DB, *sql.DB) {
 	return db, sqlDb
 }
 
-func InitMqttClient() (mqtt.Client, error) {
-	broker := config.GetEnvOrPanic(config.EnvKeys.Broker)
-	clientId := config.GetEnvOrPanic(config.EnvKeys.ClientId)
-	return lmqtt.CreateMQTTClient(broker, clientId)
-}
-
 func main() {
-	lis := InitServer()
-	db, sqlDb := InitDb()
+	loadEnv()
+	cfg := config.LoadConfig()
+
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		syscall.SIGTERM,
+	)
+	defer stop()
+
+	//lis := InitServer()
+	db, sqlDb := initDb(cfg.DatabaseConnectionString)
 	defer sqlDb.Close()
 
 	repository := repositories.NewSensorReadingRepository(db)
 
-	broker, err := InitMqttClient()
+	client, err := lmqtt.CreateMQTTClient(ctx, &lmqtt.ConfigMqtt{
+		Broker:   cfg.Broker,
+		Qos:      1,
+		Topic:    cfg.Topic,
+		ClientId: cfg.ClientId})
 	if err != nil {
-		log.Fatalf("Failed to connect to MQTT client: %v", err)
+		log.Fatal(err)
 	}
-	topic := config.GetEnvOrPanic(config.EnvKeys.Topic)
-	service := services.NewSensorReadingService(repository, broker, topic)
+	service := services.NewSensorReadingService(repository, client, cfg.Topic)
 
 	server := grpc.NewServer()
-
 	handler := handlers.NewSensorReadingHandler(service)
+
+	listen, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		log.Fatalf("Error listening for tcp connections on :8080, %v", err)
+	}
+
 	sensorpb.RegisterSensorReadingServiceServer(server, handler)
 
-	log.Println("Starting server...")
-	if err := server.Serve(lis); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
+	go func() {
+		log.Printf("Server listening at %v", listen.Addr())
+		if err := server.Serve(listen); err != nil {
+			if !errors.Is(err, grpc.ErrServerStopped) {
+				log.Printf("GRPC server failed to serve: %v", err)
+				stop()
+			}
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("Shutting down server...")
+	server.GracefulStop()
 }

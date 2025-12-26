@@ -26,5 +26,5 @@ func Connect(connectionString string) (*gorm.DB, error) {
 		time.Sleep(time.Duration(attempt) * time.Second)
 	}
 
-	return nil, fmt.Errorf("Connect: Could not open DB connection after %v retries: %w", maxRetries, err)
+	return nil, fmt.Errorf("connect: Could not open DB connection after %v retries: %w", maxRetries, err)
 }

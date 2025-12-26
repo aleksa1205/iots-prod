@@ -30,6 +30,7 @@ type SensorReadingResponse struct {
 type SensorReadingOverview struct {
 	ID          string
 	UsedKW      float64
+	Time        int64
 	GeneratedKW float64
 }
 
@@ -60,6 +61,7 @@ func (r *SensorReadingRequest) UpdateDomain(entity *entities.SensorReading) {
 func ToOverview(r *entities.SensorReading) *SensorReadingOverview {
 	return &SensorReadingOverview{
 		ID:          r.ID,
+		Time:        r.Time,
 		UsedKW:      r.UsedKW,
 		GeneratedKW: r.GeneratedKW,
 	}
