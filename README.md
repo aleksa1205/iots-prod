@@ -1,26 +1,9 @@
-# Internet of Things and Services (IoTS)
+## Project III - MLaaS and NATS
 
----
-
-# System Architecture
-```mermaid
-graph LR
-    CSV[CSV Dataset] --> SG[Sensor Generator]
-    SG -->|REST| GW[Gateway]
-    GW -->|gRPC| DM[Data Manager]
-    DM --> DB[(PostgreSQL)]
-    DM -->|MQTT| EM[Event Manager]
-    EM -->|MQTT| MQT[MQTT Client]
-```
-
----
-
-# Project III - MLaaS and NATS
-
-## MLaaS
+### MLaaS
 **MLaaS** is a microservice used to train model on incoming data and predict future values based on historical measurments.
 
-### Tech Stack
+#### Tech Stack
 ⚙️ **Language:** Python  
 
 🛠 **Web Framework:** FastAPI  
@@ -29,11 +12,11 @@ graph LR
 
 💾 **Model Serialization:** joblib  
 
-### Endpoints
+#### Endpoints
 - **GET /** – Root endpoint. Can be used to check if the service is running.  
 - **POST /predict/** – Accepts recent historical data and returns predicted future values from the trained ML model.
 
-### Development
+#### Development
 1. Make sure all dependencies are installed 
 ```bash
 pip install -r requirements.txt
@@ -48,3 +31,6 @@ uvicorn main:app --reload
 ```
 http://{address}:{port}/docs
 ```
+
+# Other
+- [Kaggle - Smart Home Dataset With Weather Information](https://www.kaggle.com/datasets/taranvee/smart-home-dataset-with-weather-information)
