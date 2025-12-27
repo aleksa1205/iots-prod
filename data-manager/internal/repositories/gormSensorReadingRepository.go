@@ -5,6 +5,7 @@ import (
 	"data-manager/internal/entities"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type GormSensorReadingRepository struct {
@@ -91,6 +92,21 @@ func (r *GormSensorReadingRepository) Create(ctx context.Context, domain *entiti
 	return r.DbWithCtx(ctx).
 		Model(domain).
 		Create(&domain).Error
+}
+
+func (r *GormSensorReadingRepository) BatchCreate(ctx context.Context, entityList []*entities.SensorReading) (int64, error) {
+	if len(entityList) == 0 {
+		return 0, nil
+	}
+
+	result := r.
+		DbWithCtx(ctx).
+		Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "id"}},
+			DoNothing: true,
+		}).Create(&entityList)
+
+	return result.RowsAffected, result.Error
 }
 
 func (r *GormSensorReadingRepository) Update(ctx context.Context, domain *entities.SensorReading) error {

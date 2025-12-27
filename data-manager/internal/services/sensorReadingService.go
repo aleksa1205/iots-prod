@@ -5,10 +5,12 @@ import (
 	"data-manager/internal/dtos"
 	domain "data-manager/internal/entities"
 	lmqtt "data-manager/internal/mqtt"
+	sensorpb "data-manager/internal/proto"
 	"data-manager/internal/repositories"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 
 	"google.golang.org/grpc/codes"
@@ -20,10 +22,11 @@ type SensorReadingService struct {
 	repository repositories.SensorReadingRepository
 	broker     *lmqtt.SensorMqttClient
 	topic      string
+	batchSize  int32
 }
 
 func NewSensorReadingService(repository repositories.SensorReadingRepository, broker *lmqtt.SensorMqttClient, topic string) SensorReadingServiceInterface {
-	return &SensorReadingService{repository: repository, broker: broker, topic: topic}
+	return &SensorReadingService{repository: repository, broker: broker, topic: topic, batchSize: 10}
 }
 
 func (s *SensorReadingService) GetAllSensors(ctx context.Context, pageSize int32, pageNumber int32) (*domain.PaginatedSensorReading, error) {
@@ -100,6 +103,58 @@ func (s *SensorReadingService) Create(ctx context.Context, request *dtos.SensorR
 	}
 
 	return sensor, nil
+}
+
+func (s *SensorReadingService) BatchCreate(ctx context.Context, recv func() (*sensorpb.CreateSensorReadingRequest, error)) (int64, error) {
+	batch := make([]*domain.SensorReading, 0, s.batchSize)
+	var totalInserted int64
+
+	flush := func() error {
+		if len(batch) == 0 {
+			return nil
+		}
+		inserted, err := s.repository.BatchCreate(ctx, batch)
+		if err != nil {
+			return err
+		}
+
+		for _, reading := range batch {
+			payload, err := json.Marshal(reading)
+			if err != nil {
+				return err
+			}
+			if err := s.broker.Publish(payload); err != nil {
+				return err
+			}
+		}
+		totalInserted += inserted
+		batch = batch[:0]
+		return nil
+	}
+
+	for {
+		proto, err := recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return 0, err
+		}
+		entity := proto.ToRequest().ToDomain()
+		batch = append(batch, entity)
+
+		if len(batch) >= int(s.batchSize) {
+			if err := flush(); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	if err := flush(); err != nil {
+		return 0, err
+	}
+
+	return totalInserted, nil
 }
 
 func (s *SensorReadingService) Update(ctx context.Context, id string, request *dtos.SensorReadingRequest) (*domain.SensorReading, error) {

@@ -12,6 +12,8 @@ type SensorReadingRepository interface {
 
 	Create(ctx context.Context, entity *entities.SensorReading) error
 
+	BatchCreate(ctx context.Context, entityList []*entities.SensorReading) (int64, error)
+
 	Update(ctx context.Context, entity *entities.SensorReading) error
 
 	Delete(ctx context.Context, entity *entities.SensorReading) error
