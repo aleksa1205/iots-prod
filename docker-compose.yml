@@ -106,11 +106,21 @@ services:
       RECEIVE_TOPIC: sensorReading/data/raw
       PUBLISH_TOPIC: sensorReading/analytics
       MLAASURL: http://mlaas:8080
+      NATS_BROKER: nats://nats:6222
+      SUBJECT: ml-model-subject
+
     depends_on:
       - mqtt
+      - nats
 
   mlaas:
     build: ./mlaas
     container_name: mlaas
     ports:
       - ${MLAAS_PORT}:8080
+
+  nats:
+    image: nats
+    ports:
+      - "8222:8222"
+    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --http_port 8222 "

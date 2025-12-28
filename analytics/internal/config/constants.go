@@ -7,6 +7,8 @@ type EnvironmentVariableKeys struct {
 	PublishTopic string
 	ReceiveTopic string
 	MLaaSUrl     string
+	NatsBroker   string
+	Subject      string
 }
 
 var EnvKeys = EnvironmentVariableKeys{
@@ -16,4 +18,6 @@ var EnvKeys = EnvironmentVariableKeys{
 	PublishTopic: "PUBLISH_TOPIC",
 	ReceiveTopic: "RECEIVE_TOPIC",
 	MLaaSUrl:     "MLAASURL",
+	NatsBroker:   "NATS_BROKER",
+	Subject:      "SUBJECT",
 }

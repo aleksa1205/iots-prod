@@ -6,6 +6,8 @@ type Config struct {
 	PublishTopic string
 	ReceiveTopic string
 	MLaasUrl     string
+	NatsBroker   string
+	Subject      string
 }
 
 func LoadConfig() *Config {
@@ -15,5 +17,7 @@ func LoadConfig() *Config {
 		ReceiveTopic: GetEnvOrPanic(EnvKeys.ReceiveTopic),
 		ClientId:     GetEnvOrPanic(EnvKeys.ClientId),
 		MLaasUrl:     GetEnvOrPanic(EnvKeys.MLaaSUrl),
+		NatsBroker:   GetEnvOrPanic(EnvKeys.NatsBroker),
+		Subject:      GetEnvOrPanic(EnvKeys.Subject),
 	}
 }

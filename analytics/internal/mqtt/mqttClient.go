@@ -2,6 +2,7 @@ package mqtt
 
 import (
 	"analytics/internal/dtos"
+	nats "analytics/internal/nats"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -21,6 +22,7 @@ type ConfigMqtt struct {
 	Qos          byte
 	MlaaSUrl     string
 	BufferSize   int
+	NatsClient   *nats.SensorNatsClient
 }
 
 type SensorMqttClient struct {
@@ -31,6 +33,7 @@ type SensorMqttClient struct {
 	bufferSize   int
 	mutex        sync.Mutex
 	mlaasUrl     string
+	natsClient   *nats.SensorNatsClient
 }
 
 func CreateMQTTClient(ctx context.Context, cfg *ConfigMqtt) (*SensorMqttClient, error) {
@@ -71,6 +74,7 @@ func CreateMQTTClient(ctx context.Context, cfg *ConfigMqtt) (*SensorMqttClient, 
 		qos:          qos,
 		mlaasUrl:     cfg.MlaaSUrl,
 		bufferSize:   cfg.BufferSize,
+		natsClient:   cfg.NatsClient,
 	}, nil
 }
 
@@ -138,4 +142,20 @@ func (c *SensorMqttClient) sendToMLaaS(batch []float64) {
 		return
 	}
 	log.Printf("Analytics prediction for batch: %f", result.Prediction)
+
+	if c.natsClient != nil {
+		data, err := json.Marshal(&nats.AnalyticsResult{
+			Prediction: result.Prediction,
+			Timestamp:  time.Now().Unix(),
+			Model:      "linear-regression",
+		})
+		if err != nil {
+			log.Println("Failed to marshal analytics result:", err)
+		}
+		
+		err = c.natsClient.Publish(data)
+		if err != nil {
+			log.Println("Failed to publish analytics prediction:", err)
+		}
+	}
 }

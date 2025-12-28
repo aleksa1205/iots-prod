@@ -3,6 +3,7 @@ package main
 import (
 	"analytics/internal/config"
 	lmqtt "analytics/internal/mqtt"
+	"analytics/internal/nats"
 	"context"
 	"log"
 	"os"
@@ -33,6 +34,14 @@ func main() {
 		cancel()
 	}()
 
+	natsClient, err := nats.CreateNatsClient(ctx, &nats.ConfigNats{
+		Broker:  cfg.NatsBroker,
+		Subject: cfg.Subject,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	client, err := lmqtt.CreateMQTTClient(ctx, &lmqtt.ConfigMqtt{
 		Broker:       cfg.Broker,
 		ClientId:     cfg.ClientId,
@@ -40,6 +49,7 @@ func main() {
 		Qos:          1,
 		MlaaSUrl:     cfg.MLaasUrl,
 		BufferSize:   20,
+		NatsClient:   natsClient,
 	})
 	if err != nil {
 		log.Fatal(err)
