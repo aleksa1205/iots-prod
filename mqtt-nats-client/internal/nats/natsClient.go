@@ -52,6 +52,13 @@ func CreateNatsClient(ctx context.Context, cfg *ConfigNats) (*SensorNatsClient, 
 	}, nil
 }
 
-func (n *SensorNatsClient) Publish(payload []byte) error {
-	return n.client.Publish(n.subject, payload)
+func (sn *SensorNatsClient) Subscribe() error {
+	_, err := sn.client.Subscribe(sn.subject, func(msg *nats.Msg) {
+		log.Printf("Received message: %s", string(msg.Data))
+	})
+	if err != nil {
+		return fmt.Errorf("failed to subscribe to subject %s: %w", sn.subject, err)
+	}
+	log.Printf("Subscribed to subject %s", sn.subject)
+	return nil
 }

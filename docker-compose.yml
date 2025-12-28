@@ -92,6 +92,8 @@ services:
       BROKER: mqtt:1883
       CLIENT_ID: ${MQTT_CLIENT_CLIENT_ID}
       TOPIC: sensorReading/data/processed
+      NATS_BROKER: nats://nats:6222
+      SUBJECT: ml-model-subject
     depends_on:
       - mqtt
 

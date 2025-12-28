@@ -144,7 +144,7 @@ func (c *SensorMqttClient) sendToMLaaS(batch []float64) {
 	log.Printf("Analytics prediction for batch: %f", result.Prediction)
 
 	if c.natsClient != nil {
-		data, err := json.Marshal(&nats.AnalyticsResult{
+		data, err := json.Marshal(&dtos.AnalyticsResult{
 			Prediction: result.Prediction,
 			Timestamp:  time.Now().Unix(),
 			Model:      "linear-regression",
@@ -152,7 +152,7 @@ func (c *SensorMqttClient) sendToMLaaS(batch []float64) {
 		if err != nil {
 			log.Println("Failed to marshal analytics result:", err)
 		}
-		
+
 		err = c.natsClient.Publish(data)
 		if err != nil {
 			log.Println("Failed to publish analytics prediction:", err)

@@ -5,6 +5,7 @@ import (
 	"log"
 	"mqqt-client/internal/config"
 	lmqtt "mqqt-client/internal/mqtt"
+	nats2 "mqqt-client/internal/nats"
 	"os"
 	"os/signal"
 	"syscall"
@@ -34,7 +35,7 @@ func main() {
 	}()
 
 	client, err := lmqtt.CreateMQTTClient(ctx, &lmqtt.ConfigMqtt{
-		Broker:   cfg.Broker,
+		Broker:   cfg.MqttBroker,
 		ClientId: cfg.ClientId,
 		Topic:    cfg.Topic,
 		Qos:      1,
@@ -48,7 +49,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("Mqtt Client service started ...")
+	nats, err := nats2.CreateNatsClient(ctx, &nats2.ConfigNats{
+		Subject: cfg.Subject,
+		Broker:  cfg.NatsBroker,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = nats.Subscribe()
+
+	log.Println("Mqtt/Nats Client service started ...")
 
 	<-ctx.Done()
 	log.Println("Shutting down...")
