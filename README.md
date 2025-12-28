@@ -32,5 +32,11 @@ uvicorn main:app --reload
 http://{address}:{port}/docs
 ```
 
+### Analytics
+**Analytics** is a microservice similar to other in the app. It subscribes to a **topic** where **DataManager** sends data, uses the **MLaaS** REST endpoint to generate predictions, and publishes the result to another **NATS** subject `analytics-prediction`.
+
+### MqttNats Client
+This client is an extension of Phase II of the project. Previously, it only received MQTT messages, but now it also subscribes to the `analytics-prediction` subject on the NATS message broker to receive messages from the **Analytics** microservice.
+
 # Other
 - [Kaggle - Smart Home Dataset With Weather Information](https://www.kaggle.com/datasets/taranvee/smart-home-dataset-with-weather-information)
