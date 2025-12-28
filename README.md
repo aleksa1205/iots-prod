@@ -1,3 +1,6 @@
+# Internet of Things and Services (IoTS)
+As part of the **Internet of Things and Services** university course, several projects were developed to explore IoT data acquisition, processing, and service-oriented architectures. The projects focused on designing scalable systems for sensor data management, implementing REST and **gRPC APIs**, and deploying services in **containerized environments**. Additionally, the work included the use of **MQTT** and **NATS** message brokers for asynchronous communication, as well as **basic machine learning model training** for data analysis and prediction.
+
 ## System Architecture
 
 ```mermaid
