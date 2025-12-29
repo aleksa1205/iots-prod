@@ -1,23 +1,19 @@
 package config
 
 type EnvironmentVariableKeys struct {
-	Env          string
-	Broker       string
-	ClientId     string
-	PublishTopic string
-	ReceiveTopic string
+	MqttBroker   string
+	MqttClientId string
+	MqttTopic    string
 	MLaaSUrl     string
 	NatsBroker   string
-	Subject      string
+	NatsSubject  string
 }
 
 var EnvKeys = EnvironmentVariableKeys{
-	Env:          "ENV",
-	Broker:       "BROKER",
-	ClientId:     "CLIENT_ID",
-	PublishTopic: "PUBLISH_TOPIC",
-	ReceiveTopic: "RECEIVE_TOPIC",
-	MLaaSUrl:     "MLAASURL",
+	MqttBroker:   "MQTT_BROKER",
+	MqttClientId: "MQTT_CLIENT_ID",
+	MqttTopic:    "MQTT_TOPIC",
+	MLaaSUrl:     "MLAAS_URL",
 	NatsBroker:   "NATS_BROKER",
-	Subject:      "SUBJECT",
+	NatsSubject:  "NATS_SUBJECT",
 }

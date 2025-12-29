@@ -5,7 +5,7 @@ import (
 	"log"
 	"mqqt-client/internal/config"
 	lmqtt "mqqt-client/internal/mqtt"
-	nats2 "mqqt-client/internal/nats"
+	lnats "mqqt-client/internal/nats"
 	"os"
 	"os/signal"
 	"syscall"
@@ -36,8 +36,8 @@ func main() {
 
 	client, err := lmqtt.CreateMQTTClient(ctx, &lmqtt.ConfigMqtt{
 		Broker:   cfg.MqttBroker,
-		ClientId: cfg.ClientId,
-		Topic:    cfg.Topic,
+		ClientId: cfg.MqttClientId,
+		Topic:    cfg.MqttTopic,
 		Qos:      1,
 	})
 	if err != nil {
@@ -49,8 +49,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	nats, err := nats2.CreateNatsClient(ctx, &nats2.ConfigNats{
-		Subject: cfg.Subject,
+	nats, err := lnats.CreateNatsClient(ctx, &lnats.ConfigNats{
+		Subject: cfg.NatsSubject,
 		Broker:  cfg.NatsBroker,
 	})
 	if err != nil {

@@ -87,13 +87,11 @@ services:
     ports:
       - ${MQTT_CLIENT_PORT}:5500
     environment:
-      HOST: 0.0.0.0
-      PORT: ${MQTT_CLIENT_PORT}
-      BROKER: mqtt:1883
-      CLIENT_ID: ${MQTT_CLIENT_CLIENT_ID}
-      TOPIC: eventmanager-anomalies
+      MQTT_BROKER: mqtt:1883
+      MQTT_CLIENT_ID: mqtt-nats-client
+      MQTT_TOPIC: eventmanager-anomalies
       NATS_BROKER: nats://nats:6222
-      SUBJECT: ml-model-subject
+      NATS_SUBJECT: ml-model-subject
     depends_on:
       - mqtt
 
@@ -103,14 +101,12 @@ services:
     ports:
       - ${ANALYTICS_PORT}:5500
     environment:
-      BROKER: mqtt:1883
-      CLIENT_ID: ${ANALYTICS_CLIENT_ID}
-      RECEIVE_TOPIC: datamanager-readings
-      PUBLISH_TOPIC: sensorReading/analytics
-      MLAASURL: http://mlaas:8080
+      MQTT_BROKER: mqtt:1883
+      MQTT_CLIENT_ID: analytics
+      MQTT_TOPIC: datamanager-readings
+      MLAAS_URL: http://mlaas:8080
       NATS_BROKER: nats://nats:6222
-      SUBJECT: ml-model-subject
-
+      NATS_SUBJECT: ml-model-subject
     depends_on:
       - mqtt
       - nats

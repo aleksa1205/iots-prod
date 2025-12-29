@@ -36,18 +36,18 @@ func main() {
 
 	natsClient, err := nats.CreateNatsClient(ctx, &nats.ConfigNats{
 		Broker:  cfg.NatsBroker,
-		Subject: cfg.Subject,
+		Subject: cfg.NatsSubject,
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	client, err := lmqtt.CreateMQTTClient(ctx, &lmqtt.ConfigMqtt{
-		Broker:       cfg.Broker,
-		ClientId:     cfg.ClientId,
-		ReceiveTopic: cfg.ReceiveTopic,
+		Broker:       cfg.MqttBroker,
+		ClientId:     cfg.MqttClientId,
+		ReceiveTopic: cfg.MqttTopic,
 		Qos:          1,
-		MlaaSUrl:     cfg.MLaasUrl,
+		MlaaSUrl:     cfg.MLaaSUrl,
 		BufferSize:   20,
 		NatsClient:   natsClient,
 	})

@@ -1,23 +1,21 @@
 package config
 
 type Config struct {
-	Broker       string
-	ClientId     string
-	PublishTopic string
-	ReceiveTopic string
-	MLaasUrl     string
+	MqttBroker   string
+	MqttClientId string
+	MqttTopic    string
+	MLaaSUrl     string
 	NatsBroker   string
-	Subject      string
+	NatsSubject  string
 }
 
 func LoadConfig() *Config {
 	return &Config{
-		Broker:       GetEnvOrPanic(EnvKeys.Broker),
-		PublishTopic: GetEnvOrPanic(EnvKeys.PublishTopic),
-		ReceiveTopic: GetEnvOrPanic(EnvKeys.ReceiveTopic),
-		ClientId:     GetEnvOrPanic(EnvKeys.ClientId),
-		MLaasUrl:     GetEnvOrPanic(EnvKeys.MLaaSUrl),
+		MqttBroker:   GetEnvOrPanic(EnvKeys.MqttBroker),
+		MqttTopic:    GetEnvOrPanic(EnvKeys.MqttTopic),
+		MqttClientId: GetEnvOrPanic(EnvKeys.MqttClientId),
+		MLaaSUrl:     GetEnvOrPanic(EnvKeys.MLaaSUrl),
 		NatsBroker:   GetEnvOrPanic(EnvKeys.NatsBroker),
-		Subject:      GetEnvOrPanic(EnvKeys.Subject),
+		NatsSubject:  GetEnvOrPanic(EnvKeys.NatsSubject),
 	}
 }
