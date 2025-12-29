@@ -26,7 +26,7 @@ public class GatewayClient
             try
             {
                 var response =
-                    await _client.PostAsJsonAsync($"{options.Address}/{options.Endpoint}", sensors, cancellationToken);
+                    await _client.PostAsJsonAsync(options.Address, sensors, cancellationToken);
         
                 response.EnsureSuccessStatusCode();
                 await Task.Delay(options.BatchTimeout * 1000, cancellationToken);
