@@ -65,14 +65,14 @@ func main() {
 	repository := repositories.NewSensorReadingRepository(db)
 
 	client, err := lmqtt.CreateMQTTClient(ctx, &lmqtt.ConfigMqtt{
-		Broker:   cfg.Broker,
+		Broker:   cfg.MqttBroker,
 		Qos:      1,
-		Topic:    cfg.Topic,
-		ClientId: cfg.ClientId})
+		Topic:    cfg.MqttTopic,
+		ClientId: cfg.MqttClientId})
 	if err != nil {
 		log.Fatal(err)
 	}
-	service := services.NewSensorReadingService(repository, client, cfg.Topic)
+	service := services.NewSensorReadingService(repository, client, cfg.MqttTopic)
 
 	server := grpc.NewServer()
 	handler := handlers.NewSensorReadingHandler(service)

@@ -16,9 +16,9 @@ services:
       - ${DATA_MANAGER_PORT}:5500
     environment:
       DB_CONNECTION_STRING: host=database user=${POSTGRES_DB_USER} password=${POSTGRES_DB_PASSWORD} dbname=${POSTGRES_DB_NAME} port=5432 sslmode=disable
-      BROKER: mqtt:1883
-      CLIENT_ID: ${DATA_MANAGER_CLIENT_ID}
-      TOPIC: sensorReading/data/raw
+      MQTT_BROKER: mqtt:1883
+      MQTT_CLIENT_ID: data-manager
+      MQTT_TOPIC: datamanager-readings
     depends_on:
       - database
 
@@ -72,18 +72,18 @@ services:
     ports:
       - ${EVENT_MANAGER_PORT}:5500
     environment:
-      BROKER: mqtt:1883
-      CLIENT_ID: ${EVENT_MANAGER_CLIENT_ID}
-      RECEIVE_TOPIC: sensorReading/data/raw
-      PUBLISH_TOPIC: sensorReading/data/processed
-      USED_THRESHOLD: ${EVENT_MANAGER_USED_THRESHOLD}
-      GEN_THRESHOLD: ${EVENT_MANAGER_GEN_THRESHOLD}
+      MQTT_BROKER: mqtt:1883
+      MQTT_CLIENT_ID: event-manager
+      MQTT_RECEIVE_TOPIC: datamanager-readings
+      MQTT_PUBLISH_TOPIC: eventmanager-anomalies
+      USED_THRESHOLD: 0.8
+      GEN_THRESHOLD: 0.5
     depends_on:
       - mqtt
 
-  mqtt_client:
-    build: ./mqtt-client
-    container_name: mqtt_client
+  mqtt_nats_client:
+    build: ./mqtt-nats-client
+    container_name: mqtt_nats_client
     ports:
       - ${MQTT_CLIENT_PORT}:5500
     environment:
@@ -91,7 +91,7 @@ services:
       PORT: ${MQTT_CLIENT_PORT}
       BROKER: mqtt:1883
       CLIENT_ID: ${MQTT_CLIENT_CLIENT_ID}
-      TOPIC: sensorReading/data/processed
+      TOPIC: eventmanager-anomalies
       NATS_BROKER: nats://nats:6222
       SUBJECT: ml-model-subject
     depends_on:
@@ -105,7 +105,7 @@ services:
     environment:
       BROKER: mqtt:1883
       CLIENT_ID: ${ANALYTICS_CLIENT_ID}
-      RECEIVE_TOPIC: sensorReading/data/raw
+      RECEIVE_TOPIC: datamanager-readings
       PUBLISH_TOPIC: sensorReading/analytics
       MLAASURL: http://mlaas:8080
       NATS_BROKER: nats://nats:6222

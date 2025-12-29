@@ -34,13 +34,13 @@ func main() {
 	}()
 
 	client, err := lmqtt.CreateMQTTClient(ctx, &lmqtt.ConfigMqtt{
-		Broker:        cfg.Broker,
-		ClientId:      cfg.ClientId,
+		Broker:        cfg.MqttBroker,
+		ClientId:      cfg.MqttClientId,
 		GenThreshold:  cfg.GenThreshold,
 		UsedThreshold: cfg.UsedThreshold,
 		Qos:           1,
-		ReceiveTopic:  cfg.ReceiveTopic,
-		PublishTopic:  cfg.PublishTopic,
+		ReceiveTopic:  cfg.MqttReceiveTopic,
+		PublishTopic:  cfg.MqttPublishTopic,
 	})
 	if err != nil {
 		log.Fatal(err)

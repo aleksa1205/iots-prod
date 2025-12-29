@@ -1,21 +1,19 @@
 package config
 
 type EnvironmentVariableKeys struct {
-	Env           string
-	Broker        string
-	ClientId      string
-	ReceiveTopic  string
-	GenThreshold  string
-	UsedThreshold string
-	PublishTopic  string
+	MqttBroker       string
+	MqttClientId     string
+	MqttReceiveTopic string
+	MqttGenThreshold string
+	UsedThreshold    string
+	PublishTopic     string
 }
 
 var EnvKeys = EnvironmentVariableKeys{
-	Env:           "ENV",
-	Broker:        "BROKER",
-	ClientId:      "CLIENT_ID",
-	ReceiveTopic:  "RECEIVE_TOPIC",
-	PublishTopic:  "PUBLISH_TOPIC",
-	GenThreshold:  "GEN_THRESHOLD",
-	UsedThreshold: "USED_THRESHOLD",
+	MqttBroker:       "MQTT_BROKER",
+	MqttClientId:     "MQTT_CLIENT_ID",
+	MqttReceiveTopic: "MQTT_RECEIVE_TOPIC",
+	PublishTopic:     "MQTT_PUBLISH_TOPIC",
+	MqttGenThreshold: "GEN_THRESHOLD",
+	UsedThreshold:    "USED_THRESHOLD",
 }
