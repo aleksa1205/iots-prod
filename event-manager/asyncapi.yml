@@ -1,56 +1,129 @@
 asyncapi: 3.0.0
 info:
-  title: Sensor Reading Event Manager API
-  version: "1.0.0"
-  description: AsyncAPI spec for EventManager MQTT messages
+  title: Event Manager Service
+  version: 1.0.0
+  description: Microservice that checks whether sensor reading data exceeds predefined **thresholds**. If they do, they are published to a specific topic.
+  license:
+    name: Aleksa Perić
+    url: https://github.com/aleksa1205
+
 servers:
-  mosquitto:
-    url: localhost:1883
+  mqtt:
+    host: mqtt:1883
     protocol: mqtt
+    description: MQTT message broker.
+
 channels:
-  sensorReading/data/raw:
-    subscribe:
-      summary: Channel for raw sensor data readings
-      operationId: receiveRawSensorData
-      message:
-        contentType: application/json
-        payload:
+  raw-sensor-reading-data:
+    servers:
+      - $ref: "#/servers/mqtt"
+    address: data-manager/raw-sensor-reading-data
+    description: Topic on which raw sensor readings from IoT may be produced or consumed.
+    messages:
+      reading:
+        $ref: "#/components/messages/reading"
+  alert-event-sensor-reading-data:
+    servers:
+      - $ref: "#/servers/mqtt"
+    address: event-manager/alert-event-sensor-reading-data
+    description: Topic on which alert events may be produced or consumed.
+    messages:
+      alert:
+        $ref: "#/components/messages/alert"
+
+operations:
+  receiveReading:
+    action: subscribe
+    channel: "#/channels/raw-sensor-reading-data"
+  sendAnomalyEvent:
+    action: publish
+    channel: "#/channels/alert-sensor-reading-data"
+
+components:
+  messages:
+    reading:
+      name: reading
+      title: Raw Sensor Reading Data
+      summary: Raw Sensor Reading Data from IoT device.
+      payload:
+        $ref: "#/components/schemas/sensorReadingDataPayload"
+    alert:
+      name: alert
+      title: Alert Event
+      summary: Event produced when thresholds is overcommed.
+      payload:
+        $ref: "#/components/schemas/alertEventReadingDataPayload"
+  schemas:
+    sensorReadingDataPayload:
+      type: object
+      required:
+        - ID
+        - UsedKW
+        - GeneratedKW
+        - Time
+        - Temperature
+        - ApparentTemperature
+        - Pressure
+        - Humidity
+      properties:
+        ID:
+          type: string/guid
+          description: ID of the object in the database.
+        UsedKW:
+          type: double
+          description: Electrical energy consumed by the device, measured in kilowatt-hours (kWh).
+        GeneratedKW:
+          type: double
+          description: Electrical energy generated back by the device, measured in kilowatt-hours (kWh).
+        Time:
+          type: long
+          description: Unix timestamp (in milliseconds) representing when the IoT device recorded the data.
+        Temperature:
+          type: float
+          description: Ambient temperature measured by the IoT device.
+        ApparentTemperature:
+          type: float
+          description: Apparent (feels-like) temperature calculated or measured by the IoT device.
+        Pressure:
+          type: float
+          description: Atmospheric pressure measured by the IoT device.
+        Humidity:
+          type: float
+          description: Relative humidity measured by the IoT device.
+      example:
+        ID: ebcccd9e-3984-4ecc-83bb-06ec22548b15
+        UsedKW: 0.9328
+        GeneratedKW: 0.00348
+        Time: 1451624400
+        Temperature: 36.14
+        ApparentTemperature: 29.26
+        Pressure: 1016.91
+        Humidity: 0.62
+    alertEventReadingDataPayload:
+      type: object
+      required:
+        - Type
+        - Time
+        - Reading
+      properties:
+        Type:
+          type: string
+          description: Type of threshold that was exceeded.
+        Time:
+          type: long
+          description: Timestamp indicating when the threshold exceedance event was received.
+        Reading:
           type: object
-          properties:
-            id:
-              type: uuid
-              description: Unique identifier for the sensor
-            usedKw:
-              type: double
-              description: Energy used in KW
-            generatedKw:
-              type: double
-              description: Energy generated in KW
-  sensorReading/data/processed:
-    publish:
-      summary: Channel for processed sensor data readings
-      operationId: sendProcessedSensorData
-      message:
-        contentType: application/json
-        payload:
-          type: object
-          properties:
-            type:
-              type: string
-              descirption: Type of the message (e.g., alert, info)
-            time:
-              type: long
-              format: unix-time
-              description: Timestamp of the message sent.
-            reading:
-              type: object
-              properties:
-                id:
-                  type: uuid
-                  description: Unique identifier for the sensor
-                usedKw:
-                  type: double
-                  description: Energy used in KW
-                generatedKw:
-                  type: double
-                  description: Energy generated in KW
+          description: Complete sensor reading that exceeded the defined threshold.
+      example:
+        Type: GENERATE_OVERFLOW
+        Time: 1523624400
+        Reading:
+          ID: ebcccd9e-3984-4ecc-83bb-06ec22548b15
+          UsedKW: 0.9328
+          GeneratedKW: 0.00348
+          Time: 1451624400
+          Temperature: 36.14
+          ApparentTemperature: 29.26
+          Pressure: 1016.91
+          Humidity: 0.62

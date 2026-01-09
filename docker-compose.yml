@@ -74,7 +74,7 @@ services:
       MQTT_BROKER: mqtt:1883
       MQTT_CLIENT_ID: event-manager
       MQTT_RECEIVE_TOPIC: data-manager/raw-sensor-reading-data
-      MQTT_PUBLISH_TOPIC: eventmanager-anomalies
+      MQTT_PUBLISH_TOPIC: event-manager/alert-event-sensor-reading-data
       USED_THRESHOLD: 0.8
       GEN_THRESHOLD: 0.5
     depends_on:
@@ -88,7 +88,7 @@ services:
     environment:
       MQTT_BROKER: mqtt:1883
       MQTT_CLIENT_ID: mqtt-nats-client
-      MQTT_TOPIC: eventmanager-anomalies
+      MQTT_TOPIC: event-manager/alert-event-sensor-reading-data
       NATS_BROKER: nats://nats:6222
       NATS_SUBJECT: ml-model-subject
     depends_on:

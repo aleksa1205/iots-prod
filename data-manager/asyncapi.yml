@@ -73,3 +73,12 @@ components:
         Humidity:
           type: float
           description: Relative humidity measured by the IoT device.
+      example:
+        ID: ebcccd9e-3984-4ecc-83bb-06ec22548b15
+        UsedKW: 0.9328
+        GeneratedKW: 0.00348
+        Time: 1451624400
+        Temperature: 36.14
+        ApparentTemperature: 29.26
+        Pressure: 1016.91
+        Humidity: 0.62
