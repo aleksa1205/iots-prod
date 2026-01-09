@@ -35,15 +35,15 @@ graph LR
 
 ### DataManager
 
-DataManager from the first phase should be expanded so it should send messages to a `datamanager-reading` topic of MQTT message broker.
+DataManager from the first phase should be expanded so it should send messages to a `data-manager/raw-sensor-reading-data` topic of MQTT message broker.
 
-**DataManager** is extended from Phase I of the project. In this phase, it publishes sensor readings to the MQTT message broker on the `datamanager-readings` topic.
+**DataManager** is extended from Phase I of the project. In this phase, it publishes sensor readings to the MQTT message broker on the `data-manager/raw-sensor-reading-data` topic.
 
 ### EventManager
 
-**EventManager** is a microservice that is subscribed to a `datamanger-reading` topic of the MQTT and if it detects data that is anomaly in defined scope it should send it to the `eventmanager-anomalies`.
+**EventManager** is a microservice that is subscribed to a `data-manager/raw-sensor-reading-data` topic of the MQTT and if it detects data that is anomaly in defined scope it should send it to the `eventmanager-anomalies`.
 
-**EventManager** is a microservice subscribed to the `datamanager-readings` MQTT topic. It evaluates incoming data against a predefined threshold, and if anomaly is detected, the data is published to the `eventmanager-anomalies` topic for further processing.
+**EventManager** is a microservice subscribed to the `data-manager/raw-sensor-reading-data` MQTT topic. It evaluates incoming data against a predefined threshold, and if anomaly is detected, the data is published to the `eventmanager-anomalies` topic for further processing.
 
 ## MqttClient
 

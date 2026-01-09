@@ -18,7 +18,7 @@ services:
       DB_CONNECTION_STRING: host=database user=${POSTGRES_DB_USER} password=${POSTGRES_DB_PASSWORD} dbname=${POSTGRES_DB_NAME} port=5432 sslmode=disable
       MQTT_BROKER: mqtt:1883
       MQTT_CLIENT_ID: data-manager
-      MQTT_TOPIC: datamanager-readings
+      MQTT_TOPIC: data-manager/raw-sensor-reading-data
     depends_on:
       - database
 
@@ -73,7 +73,7 @@ services:
     environment:
       MQTT_BROKER: mqtt:1883
       MQTT_CLIENT_ID: event-manager
-      MQTT_RECEIVE_TOPIC: datamanager-readings
+      MQTT_RECEIVE_TOPIC: data-manager/raw-sensor-reading-data
       MQTT_PUBLISH_TOPIC: eventmanager-anomalies
       USED_THRESHOLD: 0.8
       GEN_THRESHOLD: 0.5
@@ -102,7 +102,7 @@ services:
     environment:
       MQTT_BROKER: mqtt:1883
       MQTT_CLIENT_ID: analytics
-      MQTT_TOPIC: datamanager-readings
+      MQTT_TOPIC: data-manager/raw-sensor-reading-data
       MLAAS_URL: http://mlaas:8080
       NATS_BROKER: nats://nats:6222
       NATS_SUBJECT: ml-model-subject

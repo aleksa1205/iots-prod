@@ -1,28 +1,75 @@
 asyncapi: 3.0.0
 info:
-  title: Sensor Reading Data Manager API
-  version: "1.0.0"
-  description: AsyncAPI spec for DataManager MQTT messages
+  title: Data Manager Service
+  version: 1.0.0
+  description: Microservice that manages raw **sensor reading data**, writing it to database, and sends **MQTT messages** when reading is created.
+  license:
+    name: Aleksa Perić
+    url: https://github.com/aleksa1205
+
 servers:
-  mosquitto:
-    url: localhost:1883
+  mqtt:
+    host: mqtt:1883
     protocol: mqtt
+    description: MQTT message broker.
+
 channels:
-  sensorReading/data/raw:
-    publish:
-      summary: Channel for raw sensor data readings
-      operationId: receiveRawSensorData
-      message:
-        contentType: application/json
-        payload:
-          type: object
-          properties:
-            id:
-              type: uuid
-              description: Unique identifier for the sensor
-            usedKw:
-              type: double
-              description: Energy used in KW
-            generatedKw:
-              type: double
-              description: Energy generated in KW
+  raw-sensor-reading-data:
+    servers:
+      - $ref: "#/servers/mqtt"
+    address: data-manager/raw-sensor-reading-data
+    description: Topic on which raw sensor readings from IoT may be produced or consumed.
+    messages:
+      reading:
+        $ref: "#/components/messages/reading"
+
+operations:
+  sendReading:
+    action: publish
+    channel: "#/channels/raw-sensor-reading-data"
+
+components:
+  messages:
+    reading:
+      name: reading
+      title: Raw Sensor Reading Data
+      summary: Raw Sensor Reading Data from IoT device.
+      payload:
+        $ref: "#/components/schemas/sensorReadingDataPayload"
+  schemas:
+    sensorReadingDataPayload:
+      type: object
+      required:
+        - ID
+        - UsedKW
+        - GeneratedKW
+        - Time
+        - Temperature
+        - ApparentTemperature
+        - Pressure
+        - Humidity
+      properties:
+        ID:
+          type: string/guid
+          description: ID of the object in the database.
+        UsedKW:
+          type: double
+          description: Electrical energy consumed by the device, measured in kilowatt-hours (kWh).
+        GeneratedKW:
+          type: double
+          description: Electrical energy generated back by the device, measured in kilowatt-hours (kWh).
+        Time:
+          type: long
+          description: Unix timestamp (in milliseconds) representing when the IoT device recorded the data.
+        Temperature:
+          type: float
+          description: Ambient temperature measured by the IoT device.
+        ApparentTemperature:
+          type: float
+          description: Apparent (feels-like) temperature calculated or measured by the IoT device.
+        Pressure:
+          type: float
+          description: Atmospheric pressure measured by the IoT device.
+        Humidity:
+          type: float
+          description: Relative humidity measured by the IoT device.
