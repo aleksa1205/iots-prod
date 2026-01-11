@@ -1,0 +1,125 @@
+asyncapi: 3.0.0
+info:
+  title: Analytics Service API
+  version: 1.0.0
+  description: A microservice that subscribes to the Data Manager’s MQTT topic, collects sensor readings, forwards them to the MLaaS API for analysis, and publishes the results to a NATS subject.
+  license:
+    name: Aleksa Perić
+    url: https://github.com/aleksa1205
+
+servers:
+  mqtt:
+    host: mqtt:1883
+    protocol: mqtt
+    description: MQTT message broker.
+  nats:
+    host: nats:8222
+    protocol: nats
+    description: NATS message broker.
+
+channels:
+  raw-sensor-reading-data:
+    servers:
+      - $ref: "#/servers/mqtt"
+    address: data-manager/raw-sensor-reading-data
+    description: Topic on which raw sensor readings from IoT may be produced or consumed.
+    messages:
+      reading:
+        $ref: "#/components/messages/reading"
+  analytics-predictions:
+    servers:
+      - $ref: "#/servers/nats"
+    address: analytics/predictions
+    description: Subject on which analytics predictions are published.
+    messages:
+      prediction:
+        $ref: "#/components/messages/prediction"
+
+operations:
+  receiveReading:
+    action: subscribe
+    channel: "#/channels/raw-sensor-reading-data"
+  sendPrediction:
+    action: publish
+    channel: "#/channels/analytics-predictions"
+
+components:
+  messages:
+    reading:
+      name: reading
+      title: Raw Sensor Reading Data
+      summary: Raw Sensor Reading Data from IoT device.
+      payload:
+        $ref: "#/components/schemas/sensorReadingDataPayload"
+    prediction:
+      name: prediction
+      title: Analytics Prediction Data
+      summary: Prediction data produced by the Analytics service after analyzing sensor readings.
+      payload:
+        $ref: "#/components/schemas/analyticsPredictionPayload"
+  schemas:
+    sensorReadingDataPayload:
+      type: object
+      required:
+        - ID
+        - UsedKW
+        - GeneratedKW
+        - Time
+        - Temperature
+        - ApparentTemperature
+        - Pressure
+        - Humidity
+      properties:
+        ID:
+          type: string/guid
+          description: ID of the object in the database.
+        UsedKW:
+          type: double
+          description: Electrical energy consumed by the device, measured in kilowatt-hours (kWh).
+        GeneratedKW:
+          type: double
+          description: Electrical energy generated back by the device, measured in kilowatt-hours (kWh).
+        Time:
+          type: long
+          description: Unix timestamp (in milliseconds) representing when the IoT device recorded the data.
+        Temperature:
+          type: float
+          description: Ambient temperature measured by the IoT device.
+        ApparentTemperature:
+          type: float
+          description: Apparent (feels-like) temperature calculated or measured by the IoT device.
+        Pressure:
+          type: float
+          description: Atmospheric pressure measured by the IoT device.
+        Humidity:
+          type: float
+          description: Relative humidity measured by the IoT device.
+      example:
+        ID: ebcccd9e-3984-4ecc-83bb-06ec22548b15
+        UsedKW: 0.9328
+        GeneratedKW: 0.00348
+        Time: 1451624400
+        Temperature: 36.14
+        ApparentTemperature: 29.26
+        Pressure: 1016.91
+        Humidity: 0.62
+  analyticsPredictionPayload:
+    type: object
+    required:
+      - Prediction
+      - Timestamp
+      - Model
+    properties:
+      Prediction:
+        type: double
+        description: Predicted energy usage (in kW) based on the provided sensor readings.
+      Timestamp:
+        type: long
+        description: Unix timestamp in milliseconds indicating when the prediction was generated.
+      Model:
+        type: string
+        description: Identifier (name and/or version) of the model used to generate the prediction.
+    example:
+      Prediction: 0.9685134
+      Timestamp: 1451628000
+      Model: "linear-regression"

@@ -90,7 +90,7 @@ services:
       MQTT_CLIENT_ID: mqtt-nats-client
       MQTT_TOPIC: event-manager/alert-event-sensor-reading-data
       NATS_BROKER: nats://nats:6222
-      NATS_SUBJECT: ml-model-subject
+      NATS_SUBJECT: analytics/predictions
     depends_on:
       - mqtt
 
@@ -105,7 +105,7 @@ services:
       MQTT_TOPIC: data-manager/raw-sensor-reading-data
       MLAAS_URL: http://mlaas:8080
       NATS_BROKER: nats://nats:6222
-      NATS_SUBJECT: ml-model-subject
+      NATS_SUBJECT: analytics/predictions
     depends_on:
       - mqtt
       - nats
