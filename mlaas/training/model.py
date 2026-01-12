@@ -27,6 +27,7 @@ def create_dataset(df, n_past=20, n_future=200):
             x: 2D array of past values, shape (num_samples, n_past*2)
             y: 2D array of future averages, shape (num_samples, 2)
     """
+
     x, y = [], []
     use_values = df["use [kW]"].values
     gen_values = df["gen [kW]"].values
@@ -37,7 +38,6 @@ def create_dataset(df, n_past=20, n_future=200):
         
         past_window = np.column_stack((past_use, past_gen))
         x.append(past_window.flatten())
-
         future_use_avg = use_values[i + n_past : i + n_past + n_future].mean()
         future_gen_avg = gen_values[i + n_past : i + n_past + n_future].mean()
 
