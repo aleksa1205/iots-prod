@@ -4,6 +4,7 @@ import numpy as np
 from pydantic import BaseModel
 
 model = joblib.load("./training/ml_model.pkl")
+scaler = joblib.load("./training/scaler.pkl")
 app = FastAPI()
 
 class PastStep(BaseModel):
@@ -40,11 +41,12 @@ def predict(request: PredictRequest) -> PredictResponse:
 
     past_window = np.column_stack((use_values, gen_values))
     model_input = past_window.flatten().reshape(1, -1)
+    model_input_scaled = scaler.transform(model_input)
 
-    predicted_avg = model.predict(model_input)[0]
+    predicted_next = model.predict(model_input_scaled)[0]
     
     return PredictResponse(
-        use_kw=float(predicted_avg[0]),
-        gen_kw=float(predicted_avg[1]),
-        net_kw=float(predicted_avg[1] - predicted_avg[0])
+        use_kw=float(predicted_next[0]),
+        gen_kw=float(predicted_next[1]),
+        net_kw=float(predicted_next[1] - predicted_next[0])
     )

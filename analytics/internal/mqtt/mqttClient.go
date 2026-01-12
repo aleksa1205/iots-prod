@@ -15,6 +15,11 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
+type BasicSensorReading struct {
+	UseKw float64 `json:"use_kw"`
+	GenKw float64 `json:"gen_kw"`
+}
+
 type ConfigMqtt struct {
 	Broker       string
 	ClientId     string
@@ -29,7 +34,7 @@ type SensorMqttClient struct {
 	client       mqtt.Client
 	receiveTopic string
 	qos          byte
-	buffer       []float64
+	buffer       []BasicSensorReading
 	bufferSize   int
 	mutex        sync.Mutex
 	mlaasUrl     string
@@ -97,10 +102,11 @@ func (c *SensorMqttClient) handleMessage(client mqtt.Client, msg mqtt.Message) {
 	}
 
 	c.mutex.Lock()
-	c.buffer = append(c.buffer, reading.UsedKW)
-	if len(c.buffer) > c.bufferSize {
-		batch := c.buffer[:c.bufferSize]
+	c.buffer = append(c.buffer, BasicSensorReading{reading.UsedKW, reading.GeneratedKW})
+	if len(c.buffer) >= c.bufferSize {
+        batch := c.buffer[:c.bufferSize]
 		c.buffer = c.buffer[c.bufferSize:]
+		log.Println(batch)
 		go c.sendToMLaaS(batch)
 	}
 	c.mutex.Unlock()
@@ -116,9 +122,9 @@ func (c *SensorMqttClient) receiveMessage(_ mqtt.Client, msg mqtt.Message) (dtos
 	return reading, nil
 }
 
-func (c *SensorMqttClient) sendToMLaaS(batch []float64) {
+func (c *SensorMqttClient) sendToMLaaS(batch []BasicSensorReading) {
 	reqBody := map[string]interface{}{
-		"past_values": batch, // just UsedKW values
+		"past_values": batch, 
 	}
 
 	data, err := json.Marshal(reqBody)
@@ -135,17 +141,21 @@ func (c *SensorMqttClient) sendToMLaaS(batch []float64) {
 	defer resp.Body.Close()
 
 	var result struct {
-		Prediction float64 `json:"prediction"`
+		UseKw float64 `json:"use_kw"`
+		GenKw float64 `json:"gen_kw"`
+		NetKw float64 `json:"net_kw"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		log.Println("Failed to decode MLaaS response:", err)
 		return
 	}
-	log.Printf("Analytics prediction for batch: %f", result.Prediction)
+	log.Printf("Analytics prediction for batch: %+v", result)
 
 	if c.natsClient != nil {
 		data, err := json.Marshal(&dtos.AnalyticsResult{
-			Prediction: result.Prediction,
+			UseKw:      result.UseKw,
+			GenKw:      result.GenKw,
+			NetKw:      result.NetKw,
 			Timestamp:  time.Now().Unix(),
 			Model:      "linear-regression",
 		})

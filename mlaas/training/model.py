@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split 
+from sklearn.preprocessing import StandardScaler
 
 # Load and prepare dataset
 df = pd.read_csv("./data.csv")
@@ -52,15 +53,20 @@ x_train, x_test, y_train, y_test = train_test_split(
 )
 
 # Train model
+scaler = StandardScaler()
+x_train_scaled = scaler.fit_transform(x_train)
+x_test_scaled = scaler.transform(x_test)
+
 model = LinearRegression()
-model.fit(x_train, y_train)
+model.fit(x_train_scaled, y_train)
 
 # Evaluate model
-y_pred = model.predict(x_test)
+y_pred = model.predict(x_test_scaled)
 mae_use = mean_absolute_error(y_test[:, 0], y_pred[:, 0])
 mae_gen = mean_absolute_error(y_test[:, 1], y_pred[:, 1])
 print(f"MAE use [kW]: {mae_use:.7f}")
 print(f"MAE gen [kW]: {mae_gen:.7f}")
 
 # Save model
+joblib.dump(scaler, "scaler.pkl")
 joblib.dump(model, "ml_model.pkl")
