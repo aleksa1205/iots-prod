@@ -1,16 +1,18 @@
 import joblib
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split 
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 # Load and prepare dataset
 df = pd.read_csv("./data.csv")
 df = df.drop(columns=["time", "temperature", "humidity", "apparentTemperature", "pressure"])
 
-def create_dataset(df, n_past=20, n_future=200):
+def create_dataset(df, n_past=20, n_future=50):
     """
     Generate features and targets for time series forecasting.
 
@@ -20,7 +22,7 @@ def create_dataset(df, n_past=20, n_future=200):
     Arguments:
         df: DataFrame with "use [kW]" and "gen [kW]" columns.
         n_past: Number of past time steps to use as input (default 20).
-        n_future: Number of future time steps to average as the target (default 200).
+        n_future: Number of future time steps to average as the target (default 50).
         
     Returns:
         tuple:
@@ -53,20 +55,44 @@ x_train, x_test, y_train, y_test = train_test_split(
 )
 
 # Train model
-scaler = StandardScaler()
-x_train_scaled = scaler.fit_transform(x_train)
-x_test_scaled = scaler.transform(x_test)
+model = Pipeline([
+    ("scaler", StandardScaler()),
+    ("regressor", LinearRegression()),
+])
 
-model = LinearRegression()
-model.fit(x_train_scaled, y_train)
+model.fit(x_train, y_train)
 
 # Evaluate model
-y_pred = model.predict(x_test_scaled)
+y_pred = model.predict(x_test)
+
 mae_use = mean_absolute_error(y_test[:, 0], y_pred[:, 0])
 mae_gen = mean_absolute_error(y_test[:, 1], y_pred[:, 1])
-print(f"MAE use [kW]: {mae_use:.7f}")
-print(f"MAE gen [kW]: {mae_gen:.7f}")
+
+print(f"MAE use [kW]: {mae_use:.6f}")
+print(f"MAE gen [kW]: {mae_gen:.6f}")
+
+results = pd.DataFrame({
+    "Actual use [kW]": y_test[:, 0],
+    "Predicted use [kW]": y_pred[:, 0],
+    "Actual gen [kW]": y_test[:, 1],
+    "Predicted gen [kW]": y_pred[:, 1],
+})
+
+# ---- GEN ----
+plt.figure(figsize=(10, 4))
+plt.plot(results["Actual gen [kW]"], label="Actual gen")
+plt.plot(results["Predicted gen [kW]"], label="Predicted gen")
+plt.legend()
+plt.title("Gen [kW] prediction")
+plt.show()
+
+# ---- USE ----
+plt.figure(figsize=(10, 4))
+plt.plot(results["Actual use [kW]"], label="Actual use")
+plt.plot(results["Predicted use [kW]"], label="Predicted use")
+plt.legend()
+plt.title("Use [kW] prediction")
+plt.show()
 
 # Save model
-joblib.dump(scaler, "scaler.pkl")
 joblib.dump(model, "ml_model.pkl")

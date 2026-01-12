@@ -4,7 +4,6 @@ import numpy as np
 from pydantic import BaseModel
 
 model = joblib.load("./training/ml_model.pkl")
-scaler = joblib.load("./training/scaler.pkl")
 app = FastAPI()
 
 class PastStep(BaseModel):
@@ -26,7 +25,18 @@ def normalize_steps(steps: list[PastStep]) -> list[PastStep]:
         return steps[-N_PAST:]
 
     missing = N_PAST - len(steps)
-    return [steps[0]] * missing + steps
+    first = steps[0]
+    second = steps[1] if len(steps) > 1 else steps[0]
+
+    # Linear interpolation for missing steps
+    padded_steps = []
+    for i in range(missing):
+        factor = (i + 1) / (missing + 1)
+        use_kw = first.use_kw + factor * (second.use_kw - first.use_kw)
+        gen_kw = first.gen_kw + factor * (second.gen_kw - first.gen_kw)
+        padded_steps.append(PastStep(use_kw=use_kw, gen_kw=gen_kw))
+
+    return padded_steps + steps
 
 @app.get("/")
 def read_root():
@@ -41,10 +51,9 @@ def predict(request: PredictRequest) -> PredictResponse:
 
     past_window = np.column_stack((use_values, gen_values))
     model_input = past_window.flatten().reshape(1, -1)
-    model_input_scaled = scaler.transform(model_input)
 
-    predicted_next = model.predict(model_input_scaled)[0]
-    
+    predicted_next = model.predict(model_input)[0]
+
     return PredictResponse(
         use_kw=float(predicted_next[0]),
         gen_kw=float(predicted_next[1]),
